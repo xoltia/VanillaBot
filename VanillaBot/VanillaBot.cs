@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using VanillaBot.Services;
+using VanillaBot.Services.Database;
 
 namespace VanillaBot
 {
@@ -30,12 +33,15 @@ namespace VanillaBot
                     .SetBasePath(AppContext.BaseDirectory)
                     .AddJsonFile("config.json")
                     .Build();
-            } catch (FileNotFoundException) {
+            }
+            catch (FileNotFoundException)
+            {
                 Console.WriteLine("Please provide a configuration file.");
                 Environment.Exit(1);
             }
 
             _services =  new ServiceCollection()
+                .AddDbContext<VanillaContext>()
                 .AddSingleton(_client)
                 .AddSingleton(_config)
                 .AddSingleton<CommandService>()

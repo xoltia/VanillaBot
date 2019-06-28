@@ -48,7 +48,7 @@ namespace VanillaBot.Services
 
             if (!result.IsSuccess)
             {
-                Console.WriteLine($"Error during execution of {command.GetValueOrDefault().Name} command: {result.Error}");
+                Console.WriteLine($"Error during execution of {command.GetValueOrDefault().Name} command: {result.ErrorReason}");
             }
         }
 

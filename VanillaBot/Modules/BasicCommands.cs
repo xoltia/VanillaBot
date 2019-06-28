@@ -10,9 +10,10 @@ namespace VanillaBot.Modules
     public class BasicCommands : ModuleBase<SocketCommandContext>
     {
         [Command("ping")]
-        public async Task PingCommand()
+        public async Task Ping()
         {
             await ReplyAsync("Pong!");
         }
+
     }
 }
