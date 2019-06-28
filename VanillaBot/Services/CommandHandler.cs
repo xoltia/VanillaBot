@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
 
 namespace VanillaBot.Services
 {
@@ -16,6 +17,7 @@ namespace VanillaBot.Services
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
+        private readonly string _prefix;
 
         public CommandHandler(IServiceProvider services)
         {
@@ -26,6 +28,9 @@ namespace VanillaBot.Services
 
             _client.MessageReceived += MessageReceivedAsync;
             _commands.CommandExecuted += CommandExecutedAsync;
+
+            IConfiguration conf = services.GetRequiredService<IConfiguration>();
+            _prefix = conf["prefix"];
         }
 
         private async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
@@ -49,11 +54,10 @@ namespace VanillaBot.Services
 
         private async Task MessageReceivedAsync(SocketMessage socketMessage)
         {
-            string prefix = "!";
             int argPos = 0;
 
             if (!(socketMessage is SocketUserMessage message) || message.Source != MessageSource.User ||
-               (!message.HasMentionPrefix(_client.CurrentUser, ref argPos) && !message.HasStringPrefix(prefix, ref argPos)))
+               (!message.HasMentionPrefix(_client.CurrentUser, ref argPos) && !message.HasStringPrefix(_prefix, ref argPos)))
             {
                 return;
             }
