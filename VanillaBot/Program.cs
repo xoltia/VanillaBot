@@ -12,6 +12,8 @@ namespace VanillaBot
 
         public async Task MainAsync()
         {
+            Console.Title = "VanillaBot";
+
             VanillaBot bot = new VanillaBot();
             await bot.StartFromConfig();
             await Task.Delay(-1);
