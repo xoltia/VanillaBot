@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace VanillaBot
 {
     class Program
     {
         static void Main(string[] args)
-        {
-            // The code provided will print ‘Hello World’ to the console.
-            // Press Ctrl+F5 (or go to Debug > Start Without Debugging) to run your app.
-            Console.WriteLine("Hello World!");
-            Console.ReadKey();
+            => new Program().MainAsync().GetAwaiter().GetResult();
 
-            // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
+        public async Task MainAsync()
+        {
+            VanillaBot bot = new VanillaBot();
+            await bot.StartFromConfig();
+            await Task.Delay(-1);
         }
     }
 }
