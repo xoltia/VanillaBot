@@ -20,6 +20,7 @@ namespace VanillaBot.Modules
         }
 
         [Command]
+        [Summary("Start receiving notifications for a certain user.")]
         public async Task NewNotification(IUser user)
         {
             string opter = Context.Message.Author.Id.ToString();
@@ -44,6 +45,7 @@ namespace VanillaBot.Modules
         }
 
         [Command("remove")]
+        [Summary("Stop receiving notifications for a specific user.")]
         public async Task RemoveNotification(IUser user)
         {
             string opter = Context.Message.Author.Id.ToString();
@@ -61,7 +63,7 @@ namespace VanillaBot.Modules
 
             _db.Notifications.Remove(opt);
             await _db.SaveChangesAsync();
-            await ReplyAsync($"You'll no long receive notifications about {user.Username}.");
+            await ReplyAsync($"You'll no longer receive notifications about {user.Username}.");
         }
     }
 }
