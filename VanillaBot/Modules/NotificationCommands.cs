@@ -25,7 +25,7 @@ namespace VanillaBot.Modules
             string opter = Context.Message.Author.Id.ToString();
             string opted = user.Id.ToString();
 
-            if (_db.NotificationOpts
+            if (_db.Notifications
                 .Where(n => n.ReceiverId == opter && n.OptedId == opted)
                 .FirstOrDefault() != null)
             {
@@ -33,7 +33,7 @@ namespace VanillaBot.Modules
                 return;
             }
 
-            await _db.NotificationOpts.AddAsync(new NotificationOpt()
+            await _db.Notifications.AddAsync(new Notification()
             {
                 ReceiverId = opter,
                 OptedId = opted,
@@ -49,7 +49,7 @@ namespace VanillaBot.Modules
             string opter = Context.Message.Author.Id.ToString();
             string opted = user.Id.ToString();
 
-            NotificationOpt opt = _db.NotificationOpts
+            Notification opt = _db.Notifications
                 .Where(n => n.ReceiverId == opter && n.OptedId == opted)
                 .FirstOrDefault();
 
@@ -59,7 +59,7 @@ namespace VanillaBot.Modules
                 return;
             }
 
-            _db.NotificationOpts.Remove(opt);
+            _db.Notifications.Remove(opt);
             await _db.SaveChangesAsync();
             await ReplyAsync($"You'll no long receive notifications about {user.Username}.");
         }

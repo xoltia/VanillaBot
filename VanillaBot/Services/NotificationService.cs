@@ -32,10 +32,10 @@ namespace VanillaBot.Services
 
             if (current.Status == UserStatus.Online)
             {
-                NotificationOpt[] opts = _db.NotificationOpts
+                Notification[] opts = _db.Notifications
                     .Where(n => n.OptedId == current.Id.ToString() && n.GuildId == current.Guild.Id.ToString() && n.Enabled)
                     .ToArray();
-                foreach (NotificationOpt opt in opts)
+                foreach (Notification opt in opts)
                 {
                     Embed embed = new EmbedBuilder()
                         .WithColor(Color.Green)
@@ -50,11 +50,11 @@ namespace VanillaBot.Services
 
         private async Task UserLeft(SocketGuildUser user)
         {
-            NotificationOpt[] opts = _db.NotificationOpts
+            Notification[] opts = _db.Notifications
                 .Where(n => n.OptedId == user.Id.ToString())
                 .ToArray();
 
-            foreach (NotificationOpt opt in opts)
+            foreach (Notification opt in opts)
             {
                 Embed embed = new EmbedBuilder()
                     .WithColor(Color.Orange)

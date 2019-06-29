@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VanillaBot.Services.Database.Models
 {
-    public class NotificationOpt
+    public class Notification
     {
         // Because EF wants it
         public int Id { get; set; }

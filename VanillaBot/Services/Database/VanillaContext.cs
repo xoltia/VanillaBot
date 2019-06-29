@@ -15,7 +15,7 @@ namespace VanillaBot.Services.Database
     {
         private readonly IConfiguration _config;
 
-        public DbSet<NotificationOpt> NotificationOpts { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         public VanillaContext(DbContextOptions<VanillaContext> options, IConfiguration config)
             : base(options)
