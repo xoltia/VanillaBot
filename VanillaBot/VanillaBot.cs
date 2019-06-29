@@ -26,6 +26,7 @@ namespace VanillaBot
         {
             _client = new DiscordSocketClient();
             _client.Log += Log;
+            _client.Ready += Ready;
 
             try
             {
@@ -54,6 +55,21 @@ namespace VanillaBot
         {
             Console.WriteLine(message.ToString());
             return Task.CompletedTask;
+        }
+
+        public async Task Ready()
+        {
+            UserStatus status;
+            ActivityType activityType;
+
+            if (Enum.TryParse(_config["status"], out status))
+            {
+                await _client.SetStatusAsync(status);
+            }
+
+            await _client.SetGameAsync(_config["game:name"],
+                string.IsNullOrEmpty(_config["game:url"]) ? null : _config["game:url"],
+                Enum.TryParse(_config["game:type"], out activityType) ? activityType : ActivityType.Playing);
         }
 
         public async Task Start(string token)

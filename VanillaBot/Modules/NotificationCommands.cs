@@ -10,7 +10,7 @@ using VanillaBot.Services.Database.Models;
 
 namespace VanillaBot.Modules
 {
-    [Group("notifications")]
+    [Group("notify")]
     public class NotificationCommands : ModuleBase<SocketCommandContext>
     {
         private readonly VanillaContext _db;
@@ -19,7 +19,7 @@ namespace VanillaBot.Modules
             _db = dbContext;
         }
 
-        [Command("new")]
+        [Command]
         public async Task NewNotification(IUser user)
         {
             string opter = Context.Message.Author.Id.ToString();
@@ -29,7 +29,7 @@ namespace VanillaBot.Modules
                 .Where(n => n.ReceiverId == opter && n.OptedId == opted)
                 .FirstOrDefault() != null)
             {
-                await ReplyAsync($"You've already opted to receive notifications regarding {user.Username}.");
+                await ReplyAsync($"You've already opted to receive notifications for {user.Username}, silly!");
                 return;
             }
 
@@ -40,7 +40,7 @@ namespace VanillaBot.Modules
                 GuildId = Context.Guild.Id.ToString()
             });
             await _db.SaveChangesAsync();
-            await ReplyAsync($"You will now receive notifications regarding {user.Username}.");
+            await ReplyAsync($"You'll now receive notifications about {user.Username}!");
         }
 
         [Command("remove")]
