@@ -46,6 +46,7 @@ namespace VanillaBot
                 .AddSingleton(_config)
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandler>()
+                .AddSingleton<NotificationService>()
                 .BuildServiceProvider();
         }
 
@@ -58,6 +59,7 @@ namespace VanillaBot
         public async Task Start(string token)
         {
             await _services.GetRequiredService<CommandHandler>().Initialize();
+            await _services.GetRequiredService<NotificationService>().Initialize();
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();

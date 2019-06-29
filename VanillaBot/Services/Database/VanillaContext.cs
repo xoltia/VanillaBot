@@ -7,12 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using VanillaBot.Services.Database.Models;
 
 namespace VanillaBot.Services.Database
 {
     public class VanillaContext : DbContext
     {
         private readonly IConfiguration _config;
+
+        public DbSet<NotificationOpt> NotificationOpts { get; set; }
 
         public VanillaContext(DbContextOptions<VanillaContext> options, IConfiguration config)
             : base(options)

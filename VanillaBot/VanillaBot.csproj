@@ -219,11 +219,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\NotificationCommands.cs" />
     <Compile Include="Services\CommandHandler.cs" />
     <Compile Include="Modules\BasicCommands.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Database\Models\NotificationOpt.cs" />
     <Compile Include="Services\Database\VanillaContext.cs" />
+    <Compile Include="Services\NotificationService.cs" />
     <Compile Include="VanillaBot.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -248,9 +251,7 @@
   <ItemGroup>
     <Content Include="vanilla-bgc.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\Database\Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)*.json" "$(TargetDir)" /Y</PostBuildEvent>
