@@ -25,7 +25,6 @@ namespace VanillaBot
         public VanillaBot()
         {
             _client = new DiscordSocketClient();
-            _client.Log += Log;
             _client.Ready += Ready;
 
             try
@@ -48,13 +47,8 @@ namespace VanillaBot
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<NotificationService>()
+                .AddSingleton<LoggingService>()
                 .BuildServiceProvider();
-        }
-
-        public Task Log(LogMessage message)
-        {
-            Console.WriteLine(message.ToString());
-            return Task.CompletedTask;
         }
 
         public async Task Ready()
@@ -76,6 +70,7 @@ namespace VanillaBot
         {
             await _services.GetRequiredService<CommandHandler>().Initialize();
             await _services.GetRequiredService<NotificationService>().Initialize();
+            await _services.GetRequiredService<LoggingService>().Initialize();
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();

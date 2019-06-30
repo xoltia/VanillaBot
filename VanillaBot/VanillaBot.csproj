@@ -227,6 +227,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Database\Models\Notification.cs" />
     <Compile Include="Services\Database\VanillaContext.cs" />
+    <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="VanillaBot.cs" />
   </ItemGroup>
