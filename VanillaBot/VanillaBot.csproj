@@ -219,6 +219,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\Gambling\Coin.cs" />
+    <Compile Include="Modules\GambleCommands.cs" />
     <Compile Include="Modules\ModerationCommands.cs" />
     <Compile Include="Modules\NotificationCommands.cs" />
     <Compile Include="Modules\PointsCommands.cs" />

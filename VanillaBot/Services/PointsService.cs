@@ -53,13 +53,13 @@ namespace VanillaBot.Services
                 points = new Points()
                 {
                     UserId = user.Id.ToString(),
-                    Amount = _tickAmount
+                    Amount = amount
                 };
                 await _db.Points.AddAsync(points);
             }
             else
             {
-                points.Amount += _tickAmount;
+                points.Amount += amount;
                 _db.Points.Update(points);
             }
 
