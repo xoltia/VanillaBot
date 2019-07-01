@@ -17,6 +17,8 @@ namespace VanillaBot.Services
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
+        private readonly LoggingService _logger;
+
         private readonly string _prefix;
 
         public CommandHandler(IServiceProvider services)
@@ -24,6 +26,7 @@ namespace VanillaBot.Services
             
             _client = services.GetRequiredService<DiscordSocketClient>();
             _commands = services.GetRequiredService<CommandService>();
+            _logger = services.GetRequiredService<LoggingService>();
             _services = services;
 
             _client.MessageReceived += MessageReceivedAsync;
@@ -48,7 +51,23 @@ namespace VanillaBot.Services
 
             if (!result.IsSuccess)
             {
-                Console.WriteLine($"Error during execution of {command.GetValueOrDefault().Name} command: {result.ErrorReason}");
+                EmbedBuilder embedBuilder = new EmbedBuilder();
+
+                if (result.Error >= CommandError.Exception)
+                {
+                    // Stuff user doesn't need to know about
+                    await _logger.Log(LogSeverity.Error, "CommandHandler", $"Error during execution of {command.GetValueOrDefault()?.Name} command: {result.ErrorReason}");
+
+                    embedBuilder.Title = "An unexpected error occurred executing your command.";
+                    embedBuilder.Color = Color.Orange;
+                }
+                else
+                {
+                    embedBuilder.Title = result.ErrorReason;
+                    embedBuilder.Color = Color.Red;
+                }
+
+                await context.Channel.SendMessageAsync("", false, embedBuilder.Build());
             }
         }
 
