@@ -76,6 +76,12 @@ namespace VanillaBot.Modules
                 }
             }
 
+            // Fields with least commands goes to the bottom because it looks nasty otherwise
+            builder.Fields.Sort((EmbedFieldBuilder f1, EmbedFieldBuilder f2) =>
+            {
+                return f2.Value.ToString().Length - f1.Value.ToString().Length;
+            });
+
             await ReplyAsync("", false, builder.Build());
         }
 

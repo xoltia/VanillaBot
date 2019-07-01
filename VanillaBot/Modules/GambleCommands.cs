@@ -23,8 +23,8 @@ namespace VanillaBot.Modules
             _random = random;
         }
 
-        // TODO: use custom enum with typereader for guess
         [Command("coin")]
+        [Summary("Gamble your points with a 50% chance.")]
         public async Task GambleCoin(Coin guess, uint amount)
         {
             Points points = await _points.GetPoints(Context.User);
