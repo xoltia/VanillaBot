@@ -40,6 +40,11 @@ namespace VanillaBot.Services
             }
         }
 
+        public Task<Points> GetPoints(IUser user)
+        {
+            return _db.Points.FindAsync(user.Id.ToString());
+        }
+
         public async Task AddPoints(SocketUser user, int amount)
         {
             Points points = _db.Points.Where(p => p.UserId == user.Id.ToString()).FirstOrDefault();
