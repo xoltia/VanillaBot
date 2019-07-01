@@ -54,6 +54,13 @@ namespace VanillaBot.Modules
                         description += $"{prefix}{cmd.Aliases.First()} {(cmd.Parameters.Count > 0 ? "<":"")}{string.Join(" <", cmd.Parameters.Select(p => p.Name + ">"))}\n";
                 }
 
+                // Module is empty, probably contains submodules rather than commands
+                // Builder will error if value is null or empty
+                if (string.IsNullOrEmpty(description))
+                {
+                    continue;
+                }
+
                 // So submodules are in same field as parent
                 if (builder.Fields.Exists(f => f.Name == fieldName))
                 {

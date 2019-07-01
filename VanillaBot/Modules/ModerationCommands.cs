@@ -46,20 +46,37 @@ namespace VanillaBot.Modules
             }
         }
 
-        [Command("kick")]
+        [Group("kick")]
         [Alias("showout")]
         [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
         [RequireBotPermission(GuildPermission.BanMembers, ErrorMessage = "I don't have permission to ban people.")]
-        public async Task Kick(IGuildUser member)
+        public class KickCommands : ModuleBase<SocketCommandContext>
         {
-            if (Context.Guild.Owner.Id == member.Id)
+            [Command]
+            public async Task Kick(IGuildUser member)
             {
-                await ReplyAsync("You can't kick the guild owner!");
-                return;
+                if (Context.Guild.Owner.Id == member.Id)
+                {
+                    await ReplyAsync("You can't kick the guild owner!");
+                    return;
+                }
+
+                await member.KickAsync();
+                await ReplyAsync($"Later bud {member.Mention}");
             }
 
-            await member.BanAsync();
-            await ReplyAsync($"Later bud {member.Mention}");
+            [Command]
+            public async Task Kick(IGuildUser member, [Remainder]string reason)
+            {
+                if (Context.Guild.Owner.Id == member.Id)
+                {
+                    await ReplyAsync("You can't kick the guild owner!");
+                    return;
+                }
+
+                await member.KickAsync(reason: reason);
+                await ReplyAsync($"Later bud {member.Mention}");
+            }
         }
     }
 }
