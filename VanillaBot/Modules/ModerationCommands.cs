@@ -16,7 +16,7 @@ namespace VanillaBot.Modules
         [Group("ban")]
         [Alias("banish", "removeof", "destroy")]
         [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
-        [RequireBotPermission(GuildPermission.BanMembers, ErrorMessage = "I don't have permission to kick people.")]
+        [RequireBotPermission(GuildPermission.BanMembers, ErrorMessage = "I don't have permission to ban people.")]
         public class BanCommands : ModuleBase<SocketCommandContext>
         {
             [Command]
@@ -48,8 +48,8 @@ namespace VanillaBot.Modules
 
         [Group("kick")]
         [Alias("showout")]
-        [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
-        [RequireBotPermission(GuildPermission.BanMembers, ErrorMessage = "I don't have permission to ban people.")]
+        [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You don't have permission to do that!")]
+        [RequireBotPermission(GuildPermission.KickMembers, ErrorMessage = "I don't have permission to kick people.")]
         public class KickCommands : ModuleBase<SocketCommandContext>
         {
             [Command]
