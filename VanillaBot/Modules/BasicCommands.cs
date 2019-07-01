@@ -39,8 +39,7 @@ namespace VanillaBot.Modules
             EmbedBuilder builder = new EmbedBuilder()
                 .WithColor(0xffc0cb)
                 .WithTitle("These are the things I can do.")
-                .WithDescription($"Type {prefix}help <command> for details on a specific one!\n" +
-                $"Wrap command in quotes if it is a submodule")
+                .WithDescription($"Type {prefix}help <command> for details on a specific one!")
                 .WithThumbnailUrl(_client.CurrentUser.GetAvatarUrl());
 
             foreach (ModuleInfo module in _commandService.Modules)
@@ -82,7 +81,7 @@ namespace VanillaBot.Modules
 
         [Command("help")]
         [Summary("I think you've figured it out.")]
-        public async Task Help(string command)
+        public async Task Help([Remainder]string command)
         {
             SearchResult result = _commandService.Search(Context, command);
 
