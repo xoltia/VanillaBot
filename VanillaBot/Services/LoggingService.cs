@@ -17,7 +17,7 @@ namespace VanillaBot.Services
         private readonly CommandService _commands;
 
         private string _logDirectory => Path.Combine(AppContext.BaseDirectory, "logs");
-        private string _logFile => Path.Combine(_logDirectory, $"{DateTime.Now.ToString("mm-dd-yyyy")}.txt");
+        private string _logFile => Path.Combine(_logDirectory, $"{DateTime.Now.ToString("MM-dd-yyyy")}.txt");
 
         public LoggingService(DiscordSocketClient client, CommandService commands)
         {
