@@ -46,19 +46,28 @@ namespace VanillaBot.Modules
             foreach (ModuleInfo module in _commandService.Modules)
             {
                 string description = string.Empty;
+                string fieldName = module.Parent?.Name ?? module.Name;
                 foreach (var cmd in module.Commands)
                 {
                     var result = await cmd.CheckPreconditionsAsync(Context);
                     if (result.IsSuccess)
-                        description += $"{prefix}{cmd.Aliases.First()}\n";
+                        description += $"{prefix}{cmd.Aliases.First()} {(cmd.Parameters.Count > 0 ? "<":"")}{string.Join(" <", cmd.Parameters.Select(p => p.Name + ">"))}\n";
                 }
 
-                builder.AddField(f =>
+                // So submodules are in same field as parent
+                if (builder.Fields.Exists(f => f.Name == fieldName))
                 {
-                    f.Name = module.Name;
-                    f.Value = description;
-                    f.IsInline = true;
-                });
+                    builder.Fields.Find(f => f.Name == fieldName).Value += description;
+                }
+                else
+                {
+                    builder.AddField(f =>
+                    {
+                        f.Name = fieldName;
+                        f.Value = description;
+                        f.IsInline = true;
+                    });
+                }
             }
 
             await ReplyAsync("", false, builder.Build());
@@ -87,7 +96,7 @@ namespace VanillaBot.Modules
                 builder.AddField(f =>
                 {
                     f.Name = string.Join(", ", cmd.Aliases);
-                    f.Value = $"Parameters: {(cmd.Parameters.ToArray().Length > 0 ? string.Join(", ", cmd.Parameters.Select(p => p.Name)) : "None")}\n" +
+                    f.Value = $"Parameters: {(cmd.Parameters.Count > 0 ? string.Join(", ", cmd.Parameters.Select(p => p.Name)) : "None")}\n" +
                               $"Summary: {cmd.Summary ?? "None"}";
                     f.IsInline = false;
                 });

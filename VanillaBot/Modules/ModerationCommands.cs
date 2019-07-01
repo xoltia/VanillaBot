@@ -13,20 +13,37 @@ namespace VanillaBot.Modules
     {
         // TODO: add reasons
 
-        [Command("ban")]
+        [Group("ban")]
         [Alias("banish", "removeof", "destroy")]
         [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
         [RequireBotPermission(GuildPermission.BanMembers, ErrorMessage = "I don't have permission to kick people.")]
-        public async Task Ban(IGuildUser member)
+        public class BanCommands : ModuleBase<SocketCommandContext>
         {
-            if (Context.Guild.Owner.Id == member.Id)
+            [Command]
+            public async Task Ban(IGuildUser member)
             {
-                await ReplyAsync("You can't ban the guild owner!");
-                return;
-            }
+                if (Context.Guild.Owner.Id == member.Id)
+                {
+                    await ReplyAsync("You can't ban the guild owner!");
+                    return;
+                }
 
-            await member.BanAsync();
-            await ReplyAsync("I didn't like that guy anways.");
+                await member.BanAsync();
+                await ReplyAsync("I didn't like that guy anways.");
+            }
+            
+            [Command]
+            public async Task Ban(IGuildUser member, [Remainder]string reason)
+            {
+                if (Context.Guild.Owner.Id == member.Id)
+                {
+                    await ReplyAsync("You can't ban the guild owner!");
+                    return;
+                }
+
+                await member.BanAsync(reason: reason + $" (banned by {Context.User.Username} using VanillaBot)");
+                await ReplyAsync("I didn't like that guy anways.");
+            }
         }
 
         [Command("kick")]
