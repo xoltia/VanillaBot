@@ -29,7 +29,7 @@ namespace VanillaBot.Modules
                 }
 
                 await member.BanAsync();
-                await ReplyAsync("I didn't like that guy anways.");
+                await ReplyAsync("I didn't like that guy anyways.");
             }
             
             [Command]
@@ -42,7 +42,7 @@ namespace VanillaBot.Modules
                 }
 
                 await member.BanAsync(reason: reason + $" (banned by {Context.User.Username} using VanillaBot)");
-                await ReplyAsync("I didn't like that guy anways.");
+                await ReplyAsync("I didn't like that guy anyways.");
             }
         }
 
