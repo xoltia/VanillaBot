@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace VanillaBot.Modules
 {
-    [Name("admin")]
-    public class AdminCommands : ModuleBase<SocketCommandContext>
+    [Name("moderation")]
+    public class ModerationCommands : ModuleBase<SocketCommandContext>
     {
         // TODO: add reasons
 
         [Command("ban")]
         [Alias("banish", "removeof", "destroy")]
-        [RequireUserPermission(GuildPermission.BanMembers)]
-        [RequireBotPermission(GuildPermission.BanMembers)]
+        [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
+        [RequireBotPermission(GuildPermission.BanMembers, ErrorMessage = "I don't have permission to kick people.")]
         public async Task Ban(IGuildUser member)
         {
             if (Context.Guild.Owner.Id == member.Id)
@@ -31,8 +31,8 @@ namespace VanillaBot.Modules
 
         [Command("kick")]
         [Alias("showout")]
-        [RequireUserPermission(GuildPermission.BanMembers)]
-        [RequireBotPermission(GuildPermission.BanMembers)]
+        [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
+        [RequireBotPermission(GuildPermission.BanMembers, ErrorMessage = "I don't have permission to ban people.")]
         public async Task Kick(IGuildUser member)
         {
             if (Context.Guild.Owner.Id == member.Id)

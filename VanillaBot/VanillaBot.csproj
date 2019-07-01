@@ -219,7 +219,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\AdminCommands.cs" />
+    <Compile Include="Modules\ModerationCommands.cs" />
     <Compile Include="Modules\NotificationCommands.cs" />
     <Compile Include="Services\CommandHandler.cs" />
     <Compile Include="Modules\BasicCommands.cs" />
