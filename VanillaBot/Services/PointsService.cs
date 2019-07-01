@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Timers;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using VanillaBot.Services.Database;
 using Discord;
 using VanillaBot.Services.Database.Models;
@@ -21,12 +22,12 @@ namespace VanillaBot.Services
 
         private readonly int _tickAmount;
 
-        public PointsService(DiscordSocketClient client, IConfiguration config, VanillaContext dbContext, LoggingService logger)
+        public PointsService(IServiceProvider services)
         {
-            _client = client;
-            _config = config;
-            _db = dbContext;
-            _logger = logger;
+            _client = services.GetRequiredService<DiscordSocketClient>();
+            _config = services.GetRequiredService<IConfiguration>();
+            _logger = services.GetRequiredService<LoggingService>();
+            _db = services.GetRequiredService<VanillaContext>();
 
             if (int.TryParse(_config["points:amount"], out int tickAmount))
             {

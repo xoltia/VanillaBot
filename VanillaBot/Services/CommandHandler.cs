@@ -16,8 +16,8 @@ namespace VanillaBot.Services
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
-        private readonly IServiceProvider _services;
         private readonly LoggingService _logger;
+        private readonly IServiceProvider _services;
 
         private readonly string _prefix;
 
