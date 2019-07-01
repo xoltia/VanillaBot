@@ -48,6 +48,7 @@ namespace VanillaBot
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<NotificationService>()
                 .AddSingleton<LoggingService>()
+                .AddSingleton<PointsService>()
                 .BuildServiceProvider();
         }
 
@@ -68,10 +69,7 @@ namespace VanillaBot
 
         public async Task Start(string token)
         {
-            await _services.GetRequiredService<CommandHandler>().Initialize();
-            await _services.GetRequiredService<NotificationService>().Initialize();
-            await _services.GetRequiredService<LoggingService>().Initialize();
-
+            await InitServices();
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
         }
@@ -79,6 +77,14 @@ namespace VanillaBot
         public async Task StartFromConfig()
         {
             await Start(_config["token"]);
+        }
+
+        private async Task InitServices()
+        {
+            await _services.GetRequiredService<CommandHandler>().Initialize();
+            await _services.GetRequiredService<NotificationService>().Initialize();
+            await _services.GetRequiredService<LoggingService>().Initialize();
+            await _services.GetRequiredService<PointsService>().Initialize();
         }
     }
 }

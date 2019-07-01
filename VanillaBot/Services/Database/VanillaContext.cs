@@ -16,6 +16,7 @@ namespace VanillaBot.Services.Database
         private readonly IConfiguration _config;
 
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Points> Points { get; set; }
 
         public VanillaContext(DbContextOptions<VanillaContext> options, IConfiguration config)
             : base(options)
@@ -26,6 +27,13 @@ namespace VanillaBot.Services.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(_config["sqlServer"]);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Points>()
+                .HasIndex(p => p.UserId)
+                .IsUnique();
         }
     }
 }
