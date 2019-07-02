@@ -22,15 +22,13 @@ namespace VanillaBot.Services
         }
 
         // TODO: add commands to enable/disable all or single notifications
+        // TODO: add command to remove game notification
 
         private async Task GuildMemberUpdated(SocketGuildUser old, SocketGuildUser current)
         {
-            if (old.Status == current.Status)
-            {
-                return;
-            }
+            // TODO: use AsyncEnumerable
 
-            if (current.Status == UserStatus.Online)
+            if (old.Status != current.Status && current.Status == UserStatus.Online)
             {
                 Notification[] opts = _db.Notifications
                     .Where(n => n.OptedId == current.Id.ToString() && n.GuildId == current.Guild.Id.ToString() && n.Enabled)
@@ -44,6 +42,29 @@ namespace VanillaBot.Services
 
                     SocketUser optedUser = _client.GetUser(ulong.Parse(opt.ReceiverId));
                     await optedUser.SendMessageAsync($"", false, embed);
+                }
+            }
+            else if (current.Activity != null && old.Activity?.Name != current.Activity.Name)
+            {
+                Notification[] opts = _db.Notifications
+                    .Where(n => n.OptedId == current.Id.ToString() && n.GuildId == current.Guild.Id.ToString() && n.Enabled)
+                    .ToArray();
+
+                foreach (Notification opt in opts)
+                {
+                    
+                    if (_db.GameNotifications
+                        .Where(g => g.ReceiverId == opt.ReceiverId && g.Game == current.Activity.Name)
+                        .FirstOrDefault() != null)
+                    {
+                        Embed embed = new EmbedBuilder()
+                            .WithColor(0xffc0cb)
+                            .WithTitle($"{current.Username} has started playing {current.Activity.Name}!")
+                            .Build();
+
+                        SocketUser optedUser = _client.GetUser(ulong.Parse(opt.ReceiverId));
+                        await optedUser.SendMessageAsync(embed: embed);
+                    }
                 }
             }
         }
@@ -60,7 +81,7 @@ namespace VanillaBot.Services
                     .WithColor(Color.Orange)
                     .WithTitle($"Uh oh..")
                     .WithDescription($"{user.Username} has left the guild that you opted for notifications in! " +
-                    "You will no longer receive notifications when they come online. " +
+                    "You will no longer receive notifications when they come online or start playing a game of interest. " +
                     "To resolve this disable your current notification opt and create a new one in a mutual guild. ")
                     .Build();
 

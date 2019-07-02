@@ -65,5 +65,28 @@ namespace VanillaBot.Modules
             await _db.SaveChangesAsync();
             await ReplyAsync($"You'll no longer receive notifications about {user.Username}.");
         }
+
+        [Command("game")]
+        [Summary("Receive notifications when someone you've opted to receive notifications about starts to play that game.")]
+        public async Task NewGameNotification([Remainder]string game)
+        {
+            string opter = Context.User.Id.ToString();
+
+            if (_db.GameNotifications
+                .Where(g => g.ReceiverId == opter && g.Game == game)
+                .FirstOrDefault() != null)
+            {
+                await ReplyAsync("You're already getting notifications for this game.");
+                return;
+            }
+
+            await _db.GameNotifications.AddAsync(new GameNotification()
+            {
+                ReceiverId = opter,
+                Game = game
+            });
+            await _db.SaveChangesAsync();
+            await ReplyAsync($"You'll now receive notifications for {game}.");
+        }
     }
 }
