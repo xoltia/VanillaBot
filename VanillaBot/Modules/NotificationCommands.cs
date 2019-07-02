@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VanillaBot.Services.Database;
 using VanillaBot.Services.Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace VanillaBot.Modules
 {
@@ -26,9 +27,7 @@ namespace VanillaBot.Modules
             string opter = Context.Message.Author.Id.ToString();
             string opted = user.Id.ToString();
 
-            if (_db.Notifications
-                .Where(n => n.ReceiverId == opter && n.OptedId == opted)
-                .FirstOrDefault() != null)
+            if (await _db.Notifications.SingleOrDefaultAsync(n => n.ReceiverId == opter && n.OptedId == opted) != null)
             {
                 await ReplyAsync($"You've already opted to receive notifications for {user.Username}, silly!");
                 return;
@@ -51,9 +50,7 @@ namespace VanillaBot.Modules
             string opter = Context.Message.Author.Id.ToString();
             string opted = user.Id.ToString();
 
-            Notification opt = _db.Notifications
-                .Where(n => n.ReceiverId == opter && n.OptedId == opted)
-                .FirstOrDefault();
+            Notification opt = await _db.Notifications.SingleOrDefaultAsync(n => n.ReceiverId == opter && n.OptedId == opted);
 
             if (opt == null)
             {
@@ -72,9 +69,7 @@ namespace VanillaBot.Modules
         {
             string opter = Context.User.Id.ToString();
 
-            if (_db.GameNotifications
-                .Where(g => g.ReceiverId == opter && g.Game == game)
-                .FirstOrDefault() != null)
+            if (await _db.GameNotifications.SingleOrDefaultAsync(g => g.ReceiverId == opter && g.Game == game) != null)
             {
                 await ReplyAsync("You're already getting notifications for this game.");
                 return;

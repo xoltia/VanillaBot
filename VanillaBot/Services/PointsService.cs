@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VanillaBot.Services.Database;
 using Discord;
 using VanillaBot.Services.Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace VanillaBot.Services
 {
@@ -45,7 +46,7 @@ namespace VanillaBot.Services
 
         public async Task AddPoints(SocketUser user, int amount)
         {
-            Points points = _db.Points.Where(p => p.UserId == user.Id.ToString()).FirstOrDefault();
+            Points points = await _db.Points.SingleOrDefaultAsync(p => p.UserId == user.Id.ToString());
             if (points == null)
             {
                 points = new Points()

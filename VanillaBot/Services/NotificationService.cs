@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VanillaBot.Services.Database;
 using VanillaBot.Services.Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace VanillaBot.Services
 {
@@ -26,13 +27,12 @@ namespace VanillaBot.Services
 
         private async Task GuildMemberUpdated(SocketGuildUser old, SocketGuildUser current)
         {
-            // TODO: use AsyncEnumerable
-
             if (old.Status != current.Status && current.Status == UserStatus.Online)
             {
-                Notification[] opts = _db.Notifications
+                Notification[] opts = await _db.Notifications
                     .Where(n => n.OptedId == current.Id.ToString() && n.GuildId == current.Guild.Id.ToString() && n.Enabled)
-                    .ToArray();
+                    .ToArrayAsync();
+
                 foreach (Notification opt in opts)
                 {
                     Embed embed = new EmbedBuilder()
@@ -46,16 +46,13 @@ namespace VanillaBot.Services
             }
             else if (current.Activity != null && old.Activity?.Name != current.Activity.Name)
             {
-                Notification[] opts = _db.Notifications
+                Notification[] opts = await _db.Notifications
                     .Where(n => n.OptedId == current.Id.ToString() && n.GuildId == current.Guild.Id.ToString() && n.Enabled)
-                    .ToArray();
+                    .ToArrayAsync();
 
                 foreach (Notification opt in opts)
                 {
-                    
-                    if (_db.GameNotifications
-                        .Where(g => g.ReceiverId == opt.ReceiverId && g.Game == current.Activity.Name)
-                        .FirstOrDefault() != null)
+                    if (await _db.GameNotifications.SingleOrDefaultAsync(g => g.ReceiverId == opt.ReceiverId && g.Game == current.Activity.Name) != null)
                     {
                         Embed embed = new EmbedBuilder()
                             .WithColor(0xffc0cb)
@@ -71,9 +68,9 @@ namespace VanillaBot.Services
 
         private async Task UserLeft(SocketGuildUser user)
         {
-            Notification[] opts = _db.Notifications
+            Notification[] opts = await _db.Notifications
                 .Where(n => n.OptedId == user.Id.ToString())
-                .ToArray();
+                .ToArrayAsync();
 
             foreach (Notification opt in opts)
             {
