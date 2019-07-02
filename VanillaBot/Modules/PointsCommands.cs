@@ -61,7 +61,7 @@ namespace VanillaBot.Modules
 
             await _points.AddPoints(Context.User, (int)-amount);
             await _points.AddPoints(socketUser, (int)amount);
-            await ReplyAsync($"I've given {user.Mention} {amount} of your points. Your new balance is {points.Amount - amount}.");
+            await ReplyAsync($"I've given {user.Mention} {amount} of your points. Your new balance is {points.Amount}.");
         }
     }
 }

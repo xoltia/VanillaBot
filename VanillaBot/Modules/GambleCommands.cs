@@ -17,6 +17,19 @@ namespace VanillaBot.Modules
         private readonly PointsService _points;
         private readonly Random _random;
 
+        private static List<string> slotShapes = new List<string>()
+        {
+            "💎",
+            "🍋",
+            "🍊",
+            "🍒",
+            "🔔",
+            "🍆",
+            "🍇",
+            "🍉",
+            "🍅",
+        };
+
         public GambleCommands(PointsService points, Random random)
         {
             _points = points;
@@ -63,6 +76,49 @@ namespace VanillaBot.Modules
                 await _points.AddPoints(Context.User, (int)-amount);
                 await ReplyAsync(embed: embed);
             }
+        }
+
+        [Command("slot")]
+        [Summary("Gamble your points on a slot machine.")]
+        public async Task GambleSlot(uint amount)
+        {
+            Points points = await _points.GetPoints(Context.User);
+            if (points == null || points.Amount < amount)
+            {
+                await ReplyAsync("You don't have enough points.");
+                return;
+            }
+
+            string[] randomSlots = new string[3];
+            for (int i = 0; i < randomSlots.Length; i++)
+                randomSlots[i] = slotShapes[_random.Next(slotShapes.Count)];
+
+            // Number of duplicate items
+            int duplicates = randomSlots.GroupBy(x => x).Select(x => x.Count()).OrderByDescending(x => x).First();
+
+            EmbedBuilder embed = new EmbedBuilder();
+
+            // This is where the points are added to the associated user
+            if (duplicates == 3)
+            {
+                await _points.AddPoints(Context.User, (int)amount * 3);
+                embed.Color = Color.Green;
+            }
+            else if (duplicates == 2)
+            {
+                await _points.AddPoints(Context.User, (int)amount * 2);
+                embed.Color = Color.DarkGreen;
+            }
+            else
+            {
+                await _points.AddPoints(Context.User, (int)amount * -1);
+                embed.Color = Color.LighterGrey;
+            }
+
+            embed.Description = $"[ {string.Join(" | ", randomSlots)} ]";
+            embed.Footer = new EmbedFooterBuilder().WithText($"Your new balance is {points.Amount}");
+
+            await ReplyAsync(embed: embed.Build());
         }
     }
 }
