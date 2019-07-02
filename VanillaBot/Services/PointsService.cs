@@ -138,7 +138,6 @@ namespace VanillaBot.Services
 
             if (pointBonuses.ContainsKey(message.Author.Id))
             {
-                Console.WriteLine(pointBonuses[message.Author.Id]);
                 if (pointBonuses[message.Author.Id] == _maxBonus)
                     return Task.CompletedTask;
                 pointBonuses[message.Author.Id] += _messageBonus;
