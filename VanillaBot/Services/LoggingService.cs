@@ -42,6 +42,21 @@ namespace VanillaBot.Services
             return Log(new LogMessage(severity, source, message, exception));
         }
 
+        public Task Warn(string source, string message, Exception exception = null)
+        {
+            return Log(new LogMessage(LogSeverity.Warning, source, message, exception));
+        }
+
+        public Task Info(string source, string message, Exception exception = null)
+        {
+            return Log(new LogMessage(LogSeverity.Info, source, message, exception));
+        }
+
+        public Task Error(string source, string message, Exception exception = null)
+        {
+            return Log(new LogMessage(LogSeverity.Error, source, message, exception));
+        }
+
         public Task Initialize()
         {
             _client.Log += Log;

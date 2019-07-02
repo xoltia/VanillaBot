@@ -16,7 +16,7 @@ namespace VanillaBot.Services
     public class PointsService
     {
         private readonly DiscordSocketClient _client;
-        private readonly IConfiguration _config;
+        private readonly ConfigService _config;
         private readonly VanillaContext _db;
         private readonly LoggingService _logger;
 
@@ -29,41 +29,13 @@ namespace VanillaBot.Services
         public PointsService(IServiceProvider services)
         {
             _client = services.GetRequiredService<DiscordSocketClient>();
-            _config = services.GetRequiredService<IConfiguration>();
+            _config = services.GetRequiredService<ConfigService>();
             _logger = services.GetRequiredService<LoggingService>();
             _db = services.GetRequiredService<VanillaContext>();
 
-            #region config loading
-            if (int.TryParse(_config["points:amount"], out int tickAmount))
-            {
-                _tickAmount = tickAmount;
-            }
-            else
-            {
-                _logger.Log(LogSeverity.Warning, "PointsService", "Invalid or missing tick amount setting from configuration, defaulting to 10 per tick.");
-                _tickAmount = 10;
-            }
-
-            if (int.TryParse(_config["points:messageBonus"], out int messageBonus))
-            {
-                _messageBonus = messageBonus;
-            }
-            else
-            {
-                _logger.Log(LogSeverity.Warning, "PointsService", "Invalid or missing message bonus setting from configuration, defaulting to 1 per message.");
-                _messageBonus = 1;
-            }
-
-            if (int.TryParse(_config["points:maxBonus"], out int maxBonus))
-            {
-                _maxBonus = maxBonus;
-            }
-            else
-            {
-                _logger.Log(LogSeverity.Warning, "PointsService", "Invalid or missing max bonus setting from configuration, defaulting to 10 per tick.");
-                _maxBonus = 10;
-            }
-            #endregion
+            _tickAmount = _config.GetConfigOption("points:amount", 10, int.TryParse);
+            _messageBonus = _config.GetConfigOption("points:messageBonus", 1, int.TryParse);
+            _maxBonus = _config.GetConfigOption("points:maxBonus", 10, int.TryParse);
         }
 
         public Task<Points> GetPoints(IUser user)
@@ -112,18 +84,9 @@ namespace VanillaBot.Services
 
         public async Task Initialize()
         {
-            Timer timer;
-
-            if (float.TryParse(_config["points:frequency"], out float pointFrequency))
-            {
-                await _logger.Log(LogSeverity.Info, "PointsService", $"Points will update by {_tickAmount} every {pointFrequency} minutes");
-                timer = new Timer(pointFrequency * 60 * 1000);
-            }
-            else
-            {
-                await _logger.Log(LogSeverity.Warning, "PointsService", "Invalid or missing point frequency in config, defaulting to 30 minutes.");
-                timer = new Timer(30 * 60 * 1000);
-            }
+            float pointFrequency = _config.GetConfigOption("points:frequency", 30f, float.TryParse);
+            await _logger.Log(LogSeverity.Info, "PointsService", $"Points will update by {_tickAmount} every {pointFrequency} minutes");
+            Timer timer = new Timer(pointFrequency * 60 * 1000);
 
             timer.Elapsed += TickPoints;
             timer.Enabled = true;

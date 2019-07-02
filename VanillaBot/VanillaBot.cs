@@ -44,6 +44,7 @@ namespace VanillaBot
                 .AddDbContext<VanillaContext>()
                 .AddSingleton(_client)
                 .AddSingleton(_config)
+                .AddSingleton<ConfigService>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<NotificationService>()
