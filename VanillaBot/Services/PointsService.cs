@@ -21,6 +21,10 @@ namespace VanillaBot.Services
         private readonly LoggingService _logger;
 
         private readonly int _tickAmount;
+        private readonly int _messageBonus;
+        private readonly int _maxBonus;
+
+        private readonly Dictionary<ulong, int> pointBonuses = new Dictionary<ulong, int>();
 
         public PointsService(IServiceProvider services)
         {
@@ -29,6 +33,7 @@ namespace VanillaBot.Services
             _logger = services.GetRequiredService<LoggingService>();
             _db = services.GetRequiredService<VanillaContext>();
 
+            #region config loading
             if (int.TryParse(_config["points:amount"], out int tickAmount))
             {
                 _tickAmount = tickAmount;
@@ -38,6 +43,27 @@ namespace VanillaBot.Services
                 _logger.Log(LogSeverity.Warning, "PointsService", "Invalid or missing tick amount setting from configuration, defaulting to 10 per tick.");
                 _tickAmount = 10;
             }
+
+            if (int.TryParse(_config["points:messageBonus"], out int messageBonus))
+            {
+                _messageBonus = messageBonus;
+            }
+            else
+            {
+                _logger.Log(LogSeverity.Warning, "PointsService", "Invalid or missing message bonus setting from configuration, defaulting to 1 per message.");
+                _messageBonus = 1;
+            }
+
+            if (int.TryParse(_config["points:maxBonus"], out int maxBonus))
+            {
+                _maxBonus = maxBonus;
+            }
+            else
+            {
+                _logger.Log(LogSeverity.Warning, "PointsService", "Invalid or missing max bonus setting from configuration, defaulting to 10 per tick.");
+                _maxBonus = 10;
+            }
+            #endregion
         }
 
         public Task<Points> GetPoints(IUser user)
@@ -75,10 +101,10 @@ namespace VanillaBot.Services
             {
                 foreach (SocketUser user in guild.Users)
                 {
-                    if (ticked.Contains(user.Id))
+                    if (ticked.Contains(user.Id) || user.IsBot)
                         continue;
 
-                    await AddPoints(user, _tickAmount);
+                    await AddPoints(user, pointBonuses.ContainsKey(user.Id) ? _tickAmount + pointBonuses[user.Id] :_tickAmount);
                     ticked.Add(user.Id);
                 }
             }
@@ -101,6 +127,28 @@ namespace VanillaBot.Services
 
             timer.Elapsed += TickPoints;
             timer.Enabled = true;
+
+            _client.MessageReceived += MessageReceived;
+        }
+
+        private Task MessageReceived(SocketMessage message)
+        {
+            if (message.Author.IsBot)
+                return Task.CompletedTask;
+
+            if (pointBonuses.ContainsKey(message.Author.Id))
+            {
+                Console.WriteLine(pointBonuses[message.Author.Id]);
+                if (pointBonuses[message.Author.Id] == _maxBonus)
+                    return Task.CompletedTask;
+                pointBonuses[message.Author.Id] += _messageBonus;
+            }
+            else
+            {
+                pointBonuses[message.Author.Id] = _messageBonus;
+            }
+
+            return Task.CompletedTask;
         }
     }
 }
