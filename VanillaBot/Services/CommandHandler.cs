@@ -82,7 +82,10 @@ namespace VanillaBot.Services
             }
 
             SocketCommandContext context = new SocketCommandContext(_client, message);
-            await _commands.ExecuteAsync(context, argPos, _services);
+            using (IDisposable typing = message.Channel.EnterTypingState())
+            {
+                await _commands.ExecuteAsync(context, argPos, _services);
+            }
         }
 
         public async Task Initialize()
