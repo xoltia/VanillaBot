@@ -21,8 +21,7 @@ namespace VanillaBot.Modules
             _points = points;
         }
 
-        [Command]
-        [Summary("Check how many points you have.")]
+        [Command, Summary("Check how many points you have.")]
         public async Task Points()
         {
             Points points = await _points.GetPoints(Context.User);
@@ -35,9 +34,7 @@ namespace VanillaBot.Modules
             await ReplyAsync($"You have {points.Amount} points.");
         }
 
-        [Command("give")]
-        [Alias("gift")]
-        [Summary("Share some of your points.")]
+        [Command("give"), Alias("gift"), Summary("Share some of your points.")]
         public async Task GivePoints(IUser user, uint amount)
         {
             if (user.Id == Context.User.Id)

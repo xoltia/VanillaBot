@@ -73,9 +73,8 @@ namespace VanillaBot.Modules
                 _db = dbContext;
             }
 
-            [Command]
+            [Command, Priority(0)]
             [Summary("Receive notifications when someone you've opted to receive notifications about starts to play that game.")]
-            [Priority(0)]
             public async Task NewGameNotification([Remainder]string game)
             {
                 string opter = Context.User.Id.ToString();
@@ -92,12 +91,11 @@ namespace VanillaBot.Modules
                     Game = game
                 });
                 await _db.SaveChangesAsync();
-                await ReplyAsync($"You'll now receive notifications for {game}.");
+                await ReplyAsync($"I'll now notify you when your friends start to play {game} without you.");
             }
 
-            [Command("remove")]
+            [Command("remove"), Priority(1)]
             [Summary("Stop receiving notifications about a game.")]
-            [Priority(1)]
             public async Task RemoveGameNotification([Remainder]string game)
             {
                 string opter = Context.User.Id.ToString();
@@ -111,7 +109,7 @@ namespace VanillaBot.Modules
 
                 _db.GameNotifications.Remove(notification);
                 await _db.SaveChangesAsync();
-                await ReplyAsync($"You're all set! You'll no longer be notified when your friends play {game}.");
+                await ReplyAsync($"I'll no longer notify you when your friends play {game}.");
             }
         }
     }

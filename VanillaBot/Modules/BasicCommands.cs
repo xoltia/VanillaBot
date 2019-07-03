@@ -24,15 +24,13 @@ namespace VanillaBot.Modules
             _client = client;
         }
 
-        [Command("ping")]
-        [Summary("Must do something..")]
+        [Command("ping"), Summary("Must do something..")]
         public async Task Ping()
         {
             await ReplyAsync("Pong!");
         }
 
-        [Command("help")]
-        [Summary("Shows list of commands.")]
+        [Command("help"), Summary("Shows list of commands.")]
         public async Task Help()
         {
             string prefix = _config["prefix"];
@@ -85,8 +83,7 @@ namespace VanillaBot.Modules
             await ReplyAsync("", false, builder.Build());
         }
 
-        [Command("help")]
-        [Summary("I think you've figured it out.")]
+        [Command("help"), Summary("I think you've figured it out.")]
         public async Task Help([Remainder]string command)
         {
             SearchResult result = _commandService.Search(Context, command);
