@@ -43,6 +43,85 @@ namespace VanillaBot.Modules
             await ReplyAsync($"You'll now receive notifications about {user.Username}!");
         }
 
+        [Command("disable")]
+        [Summary("Disable notifications for a specific user.")]
+        public async Task DisableNotification(IUser user)
+        {
+            string opter = Context.User.Id.ToString();
+            string opted = user.Id.ToString();
+
+            Notification opt = await _db.Notifications.SingleOrDefaultAsync(n => n.OptedId == opted && n.ReceiverId == opter);
+            if (opt == null)
+            {
+                await ReplyAsync("Nothing to disable here. You aren't receiving notifications about them, silly!");
+                return;
+            }
+
+            if (!opt.Enabled)
+            {
+                await ReplyAsync("Nothing to disable here. I've already marked this as disabled.");
+                return;
+            }
+
+            opt.Enabled = false;
+            await _db.SaveChangesAsync();
+            await ReplyAsync($"I'll remember not to send you notifications about {user.Username} until you tell me otherwise.");
+        }
+
+        [Command("enable")]
+        [Summary("Enable notifications for a specific user.")]
+        public async Task EnableNotification(IUser user)
+        {
+            string opter = Context.User.Id.ToString();
+            string opted = user.Id.ToString();
+
+            Notification opt = await _db.Notifications.SingleOrDefaultAsync(n => n.OptedId == opted && n.ReceiverId == opter);
+            if (opt == null)
+            {
+                await ReplyAsync("I can't enable a notification that doesn't exist.");
+                return;
+            }
+
+            if (opt.Enabled)
+            {
+                await ReplyAsync("Nothing to enable here. It wasn't disabled in the first place.");
+                return;
+            }
+
+            opt.Enabled = true;
+            await _db.SaveChangesAsync();
+            await ReplyAsync($"I'll start notifying you about {user.Username} again.");
+        }
+
+        [Command("list")]
+        [Summary("List every person you're receiving notifications for.")]
+        public async Task ListNotifications()
+        {
+            string opter = Context.User.Id.ToString();
+            Notification[] opts = await _db.Notifications.Where(n => n.ReceiverId == opter).ToArrayAsync();
+
+            EmbedBuilder embed = new EmbedBuilder().WithColor(0xffc0cb);
+
+            if (opts.Length == 0)
+            {
+                await ReplyAsync(embed: embed.WithTitle("You do not have any user notifications set.").Build());
+                return;
+            }
+
+            embed.Description = "These are the people I will notify you about when they play a game you have specified or come online.";
+
+            foreach (Notification opt in opts)
+            {
+                embed.AddField(f => {
+                    f.Name = Context.Client.GetUser(ulong.Parse(opt.OptedId)).Username;
+                    f.Value = opt.Enabled ? "Enabled" : "Disabled";
+                    f.IsInline = true;
+                });
+            }
+
+            await ReplyAsync(embed: embed.Build());
+        }
+
         [Command("remove")]
         [Summary("Stop receiving notifications for a specific user.")]
         public async Task RemoveNotification(IUser user)
@@ -110,6 +189,29 @@ namespace VanillaBot.Modules
                 _db.GameNotifications.Remove(notification);
                 await _db.SaveChangesAsync();
                 await ReplyAsync($"I'll no longer notify you when your friends play {game}.");
+            }
+
+            [Command("list"), Priority(1)]
+            [Summary("List every game you're receiving notifications about.")]
+            public async Task ListGameNotificatoins()
+            {
+                string opter = Context.User.Id.ToString();
+                GameNotification[] opts = await _db.GameNotifications.Where(n => n.ReceiverId == opter).ToArrayAsync();
+
+                EmbedBuilder embed = new EmbedBuilder().WithColor(0xffc0cb);
+
+                if (opts.Length == 0)
+                {
+                    await ReplyAsync(embed: embed.WithTitle("You do not have any game notifications set.").Build());
+                    return;
+                }
+
+                embed.Description = "When someone you've opted to receive notifications for plays one of these games I'll tell you.\n";
+
+                for (int i = 0; i < opts.Length; i++)
+                    embed.Description += $"\n**{i+1}. {opts[i].Game}**";
+
+                await ReplyAsync(embed: embed.Build());
             }
         }
     }
