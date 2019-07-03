@@ -27,11 +27,24 @@ namespace VanillaBot.Modules
             Points points = await _points.GetPoints(Context.User);
             if (points == null)
             {
-                await ReplyAsync("You don't have any points, try again later!");
+                await ReplyAsync("You don't have any points, try again later.");
                 return;
             }
 
-            await ReplyAsync($"You have {points.Amount} points.");
+            await ReplyAsync($"You have {points.Amount} points!");
+        }
+
+        [Command, Summary("Check how many points you have.")]
+        public async Task Points(SocketGuildUser user)
+        {
+            Points points = await _points.GetPoints(user);
+            if (points == null)
+            {
+                await ReplyAsync($"{user.Username} doesn't have any points...");
+                return;
+            }
+
+            await ReplyAsync($"{user.Username} has {points.Amount} points!");
         }
 
         [Command("give"), Alias("gift"), Summary("Share some of your points.")]
