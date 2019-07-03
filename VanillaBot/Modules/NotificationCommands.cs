@@ -63,25 +63,56 @@ namespace VanillaBot.Modules
             await ReplyAsync($"You'll no longer receive notifications about {user.Username}.");
         }
 
-        [Command("game")]
-        [Summary("Receive notifications when someone you've opted to receive notifications about starts to play that game.")]
-        public async Task NewGameNotification([Remainder]string game)
+        [Group("game")]
+        public class GameNotificationCommands : ModuleBase<SocketCommandContext>
         {
-            string opter = Context.User.Id.ToString();
+            private readonly VanillaContext _db;
 
-            if (await _db.GameNotifications.SingleOrDefaultAsync(g => g.ReceiverId == opter && g.Game == game) != null)
+            public GameNotificationCommands(VanillaContext dbContext)
             {
-                await ReplyAsync("You're already getting notifications for this game.");
-                return;
+                _db = dbContext;
             }
 
-            await _db.GameNotifications.AddAsync(new GameNotification()
+            [Command]
+            [Summary("Receive notifications when someone you've opted to receive notifications about starts to play that game.")]
+            [Priority(0)]
+            public async Task NewGameNotification([Remainder]string game)
             {
-                ReceiverId = opter,
-                Game = game
-            });
-            await _db.SaveChangesAsync();
-            await ReplyAsync($"You'll now receive notifications for {game}.");
+                string opter = Context.User.Id.ToString();
+
+                if (await _db.GameNotifications.SingleOrDefaultAsync(g => g.ReceiverId == opter && g.Game == game) != null)
+                {
+                    await ReplyAsync("You're already getting notifications for this game.");
+                    return;
+                }
+
+                await _db.GameNotifications.AddAsync(new GameNotification()
+                {
+                    ReceiverId = opter,
+                    Game = game
+                });
+                await _db.SaveChangesAsync();
+                await ReplyAsync($"You'll now receive notifications for {game}.");
+            }
+
+            [Command("remove")]
+            [Summary("Stop receiving notifications about a game.")]
+            [Priority(1)]
+            public async Task RemoveGameNotification([Remainder]string game)
+            {
+                string opter = Context.User.Id.ToString();
+                GameNotification notification = await _db.GameNotifications.SingleOrDefaultAsync(g => g.ReceiverId == opter && g.Game == game);
+
+                if (notification == null)
+                {
+                    await ReplyAsync("You're already not getting notifications for that game!");
+                    return;
+                }
+
+                _db.GameNotifications.Remove(notification);
+                await _db.SaveChangesAsync();
+                await ReplyAsync($"You're all set! You'll no longer be notified when your friends play {game}.");
+            }
         }
     }
 }
