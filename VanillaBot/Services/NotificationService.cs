@@ -38,6 +38,7 @@ namespace VanillaBot.Services
                     Embed embed = new EmbedBuilder()
                         .WithColor(Color.Green)
                         .WithTitle($"{current.Username} is now online.")
+                        .WithCurrentTimestamp()
                         .Build();
 
                     SocketUser optedUser = _client.GetUser(ulong.Parse(opt.ReceiverId));
@@ -57,6 +58,7 @@ namespace VanillaBot.Services
                         Embed embed = new EmbedBuilder()
                             .WithColor(0xffc0cb)
                             .WithTitle($"{current.Username} has started playing {current.Activity.Name}!")
+                            .WithCurrentTimestamp()
                             .Build();
 
                         SocketUser optedUser = _client.GetUser(ulong.Parse(opt.ReceiverId));
