@@ -21,7 +21,7 @@ namespace VanillaBot.Services
         private readonly VanillaContext _db;
         private readonly LoggingService _logger;
 
-        private readonly int _tickAmount;
+        private readonly float _bonusReset;
         private readonly int _messageBonus;
         private readonly int _maxBonus;
 
@@ -34,8 +34,8 @@ namespace VanillaBot.Services
             _logger = services.GetRequiredService<LoggingService>();
             _db = services.GetRequiredService<VanillaContext>();
 
-            _tickAmount = _config.GetConfigOption("points:amount", 10, int.TryParse);
             _messageBonus = _config.GetConfigOption("points:messageBonus", 1, int.TryParse);
+            _bonusReset = _config.GetConfigOption("points:bonusReset", 30f, float.TryParse);
             _maxBonus = _config.GetConfigOption("points:maxBonus", 10, int.TryParse);
         }
 
@@ -45,13 +45,16 @@ namespace VanillaBot.Services
         }
 
         public async Task AddPoints(SocketUser user, int amount)
+            => await AddPoints(user.Id.ToString(), amount);
+
+        public async Task AddPoints(string userId, int amount)
         {
-            Points points = await _db.Points.SingleOrDefaultAsync(p => p.UserId == user.Id.ToString());
+            Points points = await _db.Points.SingleOrDefaultAsync(p => p.UserId == userId);
             if (points == null)
             {
                 points = new Points()
                 {
-                    UserId = user.Id.ToString(),
+                    UserId = userId,
                     Amount = amount
                 };
                 await _db.Points.AddAsync(points);
@@ -65,36 +68,28 @@ namespace VanillaBot.Services
             await _db.SaveChangesAsync();
         }
 
-        private async void TickPoints(object sender, ElapsedEventArgs e)
+        private async void ResetBonuses(object sender, ElapsedEventArgs e)
         {
-            await _logger.Log(LogSeverity.Info, "PointsService", "Updated member points");
-
-            List<ulong> ticked = new List<ulong>();
-            foreach (SocketGuild guild in _client.Guilds)
+            await _logger.Info("PointsService", $"Giving out {pointBonuses.Count} point bonuses");
+            foreach (KeyValuePair<ulong, int> bonus in pointBonuses)
             {
-                foreach (SocketUser user in guild.Users)
-                {
-                    if (ticked.Contains(user.Id) || user.IsBot)
-                        continue;
-
-                    await AddPoints(user, pointBonuses.ContainsKey(user.Id) ? _tickAmount + pointBonuses[user.Id] :_tickAmount);
-                    ticked.Add(user.Id);
-                }
+                await AddPoints(bonus.Key.ToString(), bonus.Value);
             }
 
             pointBonuses.Clear();
+            await _logger.Info("PointsService", "Reset bonuses");
         }
 
-        public async Task Initialize()
+        public Task Initialize()
         {
-            float pointFrequency = _config.GetConfigOption("points:frequency", 30f, float.TryParse);
-            await _logger.Log(LogSeverity.Info, "PointsService", $"Points will update by {_tickAmount} every {pointFrequency} minutes");
-            Timer timer = new Timer(pointFrequency * 60 * 1000);
+            Timer timer = new Timer(_bonusReset * 60 * 1000);
 
-            timer.Elapsed += TickPoints;
+            timer.Elapsed += ResetBonuses;
             timer.Enabled = true;
 
             _client.MessageReceived += MessageReceived;
+
+            return Task.CompletedTask;
         }
 
         private Task MessageReceived(SocketMessage message)

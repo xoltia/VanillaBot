@@ -40,12 +40,14 @@ namespace VanillaBot
                 Environment.Exit(1);
             }
 
-            _services =  new ServiceCollection()
-                .AddDbContext<VanillaContext>()
+            _services = new ServiceCollection()
+                .AddDbContext<VanillaContext>(ServiceLifetime.Transient)
                 .AddSingleton(_client)
                 .AddSingleton(_config)
+                .AddSingleton(new CommandService(new CommandServiceConfig() {
+                    DefaultRunMode = RunMode.Async
+                }))
                 .AddSingleton<ConfigService>()
-                .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<NotificationService>()
                 .AddSingleton<LoggingService>()
@@ -67,6 +69,8 @@ namespace VanillaBot
             await _client.SetGameAsync(_config["game:name"],
                 string.IsNullOrEmpty(_config["game:url"]) ? null : _config["game:url"],
                 Enum.TryParse(_config["game:type"], out activityType) ? activityType : ActivityType.Playing);
+
+            await _services.GetRequiredService<LoggingService>().Info("VanillaBot", $"In {_client.Guilds.Count} servers.");
         }
 
         public async Task Start(string token)

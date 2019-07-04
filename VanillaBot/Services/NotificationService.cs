@@ -22,9 +22,6 @@ namespace VanillaBot.Services
             _db = dbContext;
         }
 
-        // TODO: add commands to enable/disable all or single notifications
-        // TODO: add command to remove game notification
-
         private async Task GuildMemberUpdated(SocketGuildUser old, SocketGuildUser current)
         {
             if (old.Status != current.Status && current.Status == UserStatus.Online)
