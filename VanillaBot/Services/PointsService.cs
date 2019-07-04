@@ -81,6 +81,8 @@ namespace VanillaBot.Services
                     ticked.Add(user.Id);
                 }
             }
+
+            pointBonuses.Clear();
         }
 
         public async Task Initialize()

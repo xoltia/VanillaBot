@@ -18,6 +18,8 @@ namespace VanillaBot.Services
             _logger = logger;
         }
 
+        // TODO: add GetRequiredConfigOption which will throw if it is null or empty
+
         public T GetConfigOption<T>(string json, TryParseHandler<T> handler)
         {
             if (string.IsNullOrEmpty(_config[json]))
