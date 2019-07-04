@@ -71,7 +71,7 @@ namespace VanillaBot.Services
         private async Task UserLeft(SocketGuildUser user)
         {
             Notification[] opts = await _db.Notifications
-                .Where(n => n.OptedId == user.Id.ToString())
+                .Where(n => n.OptedId == user.Id.ToString() && n.GuildId == user.Guild.Id.ToString())
                 .ToArrayAsync();
 
             foreach (Notification opt in opts)
