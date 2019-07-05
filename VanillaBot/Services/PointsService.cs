@@ -11,6 +11,7 @@ using VanillaBot.Services.Database;
 using Discord;
 using VanillaBot.Services.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 
 namespace VanillaBot.Services
 {
@@ -25,7 +26,7 @@ namespace VanillaBot.Services
         private readonly int _messageBonus;
         private readonly int _maxBonus;
 
-        private readonly Dictionary<ulong, int> pointBonuses = new Dictionary<ulong, int>();
+        private readonly ConcurrentDictionary<ulong, int> pointBonuses = new ConcurrentDictionary<ulong, int>();
 
         public PointsService(IServiceProvider services)
         {
@@ -70,7 +71,6 @@ namespace VanillaBot.Services
 
         private async void ResetBonuses(object sender, ElapsedEventArgs e)
         {
-            await _logger.Info("PointsService", $"Giving out {pointBonuses.Count} point bonuses");
             foreach (KeyValuePair<ulong, int> bonus in pointBonuses)
             {
                 await AddPoints(bonus.Key.ToString(), bonus.Value);

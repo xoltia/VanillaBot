@@ -51,7 +51,7 @@ namespace VanillaBot
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<NotificationService>()
                 .AddSingleton<LoggingService>()
-                .AddSingleton<PointsService>()
+                .AddTransient<PointsService>()
                 .AddSingleton<Random>()
                 .BuildServiceProvider();
         }
