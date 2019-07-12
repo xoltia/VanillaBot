@@ -30,6 +30,8 @@ Here's a list of the current commands.
 * !notify game list
 
 #### moderation
+* !mute &lt;member&gt;
+* !unmute &lt;member&gt;
 * !ban &lt;member&gt;
 * !ban &lt;member&gt; &lt;reason&gt;
 * !kick &lt;member&gt;

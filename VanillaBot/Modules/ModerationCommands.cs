@@ -80,7 +80,7 @@ namespace VanillaBot.Modules
         }
 
         [Command("mute")]
-        [Summary("Prevent people from sending messages.")]
+        [Summary("Prevent someone from sending messages in this guild.")]
         // Maybe use different permission since mute is meant for voice?
         [RequireUserPermission(GuildPermission.MuteMembers, ErrorMessage = "You need permission to mute people to use this command.")]
         [RequireBotPermission(GuildPermission.ManageRoles, ErrorMessage = "I need permission to manage roles.")]
@@ -89,7 +89,7 @@ namespace VanillaBot.Modules
          * add optional time parameter
          * use custom type reader for time? 
          */
-        public async Task Mute(IGuildUser user)
+        public async Task Mute(IGuildUser member)
         {
             IRole muteRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == muteRoleName);
 
@@ -105,25 +105,25 @@ namespace VanillaBot.Modules
                     await channel.AddPermissionOverwriteAsync(muteRole, new OverwritePermissions(sendMessages: PermValue.Deny));
             }
 
-            await user.AddRoleAsync(muteRole);
-            await ReplyAsync($"I've muted {user.Username}.");
+            await member.AddRoleAsync(muteRole);
+            await ReplyAsync($"I've muted {member.Username}.");
         }
 
         [Command("unmute")]
-        [Summary("Unmute the specified user.")]
+        [Summary("Unmute the specified member.")]
         [RequireUserPermission(GuildPermission.MuteMembers, ErrorMessage = "You don't have permission to do that.")]
         [RequireBotPermission(GuildPermission.ManageRoles, ErrorMessage = "I need permission to manage roles.")]
-        public async Task Unmute(IGuildUser user)
+        public async Task Unmute(IGuildUser member)
         {
             IRole muteRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == muteRoleName);
-            if (muteRole == null || !user.RoleIds.Contains(muteRole.Id))
+            if (muteRole == null || !member.RoleIds.Contains(muteRole.Id))
             {
                 await ReplyAsync("They're already not muted.");
                 return;
             }
 
-            await user.RemoveRoleAsync(muteRole);
-            await ReplyAsync($"I'll allow {user.Username} to speak.");
+            await member.RemoveRoleAsync(muteRole);
+            await ReplyAsync($"I'll allow {member.Username} to speak.");
         }
     }
 }
