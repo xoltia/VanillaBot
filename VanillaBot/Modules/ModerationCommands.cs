@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace VanillaBot.Modules
     [Name("moderation")]
     public class ModerationCommands : ModuleBase<SocketCommandContext>
     {
+        // TODO: add per guild configuration or at least bot configuration
+        private const string muteRoleName = "vanilla-muted";
+
         [Group("ban"), Alias("banish", "removeof", "destroy")]
         [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
         [RequireBotPermission(GuildPermission.BanMembers, ErrorMessage = "I don't have permission to ban people.")]
@@ -73,6 +77,53 @@ namespace VanillaBot.Modules
                 await member.KickAsync(reason: reason);
                 await ReplyAsync($"Later bud {member.Mention}");
             }
+        }
+
+        [Command("mute")]
+        [Summary("Prevent people from sending messages.")]
+        // Maybe use different permission since mute is meant for voice?
+        [RequireUserPermission(GuildPermission.MuteMembers, ErrorMessage = "You need permission to mute people to use this command.")]
+        [RequireBotPermission(GuildPermission.ManageRoles, ErrorMessage = "I need permission to manage roles.")]
+        [RequireBotPermission(GuildPermission.ManageChannels, ErrorMessage = "I need permission to manage channels.")]
+        /* TODO:
+         * add optional time parameter
+         * use custom type reader for time? 
+         */
+        public async Task Mute(IGuildUser user)
+        {
+            IRole muteRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == muteRoleName);
+
+            // Make sure mute role exists
+            if (muteRole == null)
+                muteRole = await Context.Guild.CreateRoleAsync(muteRoleName);
+
+            // Make sure all channels prohibit the role from sending messages
+            foreach (SocketGuildChannel channel in Context.Guild.Channels)
+            {
+                OverwritePermissions? perms = channel.GetPermissionOverwrite(muteRole);
+                if (!perms.HasValue || perms.Value.SendMessages != PermValue.Deny)
+                    await channel.AddPermissionOverwriteAsync(muteRole, new OverwritePermissions(sendMessages: PermValue.Deny));
+            }
+
+            await user.AddRoleAsync(muteRole);
+            await ReplyAsync($"I've muted {user.Username}.");
+        }
+
+        [Command("unmute")]
+        [Summary("Unmute the specified user.")]
+        [RequireUserPermission(GuildPermission.MuteMembers, ErrorMessage = "You don't have permission to do that.")]
+        [RequireBotPermission(GuildPermission.ManageRoles, ErrorMessage = "I need permission to manage roles.")]
+        public async Task Unmute(IGuildUser user)
+        {
+            IRole muteRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == muteRoleName);
+            if (muteRole == null || !user.RoleIds.Contains(muteRole.Id))
+            {
+                await ReplyAsync("They're already not muted.");
+                return;
+            }
+
+            await user.RemoveRoleAsync(muteRole);
+            await ReplyAsync($"I'll allow {user.Username} to speak.");
         }
     }
 }
