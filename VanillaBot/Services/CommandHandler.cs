@@ -40,12 +40,7 @@ namespace VanillaBot.Services
         {
             if (!command.IsSpecified)
             {
-                Embed embed = new EmbedBuilder()
-                    .WithTitle($"Invalid Command.")
-                    .WithColor(Color.Red)
-                    .Build();
-
-                await context.Channel.SendMessageAsync("", false, embed);
+                // Don't show error message
                 return;
             }
 
