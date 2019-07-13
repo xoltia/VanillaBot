@@ -38,6 +38,7 @@ namespace VanillaBot.Services
 
         private async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
+            // Shouldn't happen but just in case search fails for some reason.
             if (!command.IsSpecified)
             {
                 // Don't show error message
@@ -77,9 +78,13 @@ namespace VanillaBot.Services
             }
 
             SocketCommandContext context = new SocketCommandContext(_client, message);
-            using (IDisposable typing = message.Channel.EnterTypingState())
+            SearchResult result = _commands.Search(context, argPos);
+            if (result.IsSuccess)
             {
-                await _commands.ExecuteAsync(context, argPos, _services);
+                using (IDisposable typing = message.Channel.EnterTypingState())
+                {
+                    await _commands.ExecuteAsync(context, argPos, _services);
+                }
             }
         }
 
