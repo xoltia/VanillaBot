@@ -21,6 +21,8 @@ namespace VanillaBot.Services
 
         private readonly string _prefix;
 
+        public UInt64 CommandsExecuted { get; private set; } = 0;
+
         public CommandHandler(IServiceProvider services)
         {
             
@@ -65,6 +67,8 @@ namespace VanillaBot.Services
 
                 await context.Channel.SendMessageAsync("", false, embedBuilder.Build());
             }
+
+            CommandsExecuted++;
         }
 
         private async Task MessageReceivedAsync(SocketMessage socketMessage)

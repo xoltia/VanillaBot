@@ -2,11 +2,20 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using VanillaBot.Modules.Basics;
+using VanillaBot.Services;
 
 namespace VanillaBot.Modules
 {
@@ -16,12 +25,18 @@ namespace VanillaBot.Modules
         private readonly CommandService _commandService;
         private readonly IConfiguration _config;
         private readonly DiscordSocketClient _client;
+        private readonly LoggingService _logger;
+        private readonly HttpService _http;
+        private readonly CommandHandler _commands;
 
-        public BasicCommands(CommandService commandService, IConfiguration config, DiscordSocketClient client)
+        public BasicCommands(IServiceProvider services)
         {
-            _commandService = commandService;
-            _config = config;
-            _client = client;
+            _commandService = services.GetRequiredService<CommandService>();
+            _config = services.GetRequiredService<IConfiguration>();
+            _client = services.GetRequiredService<DiscordSocketClient>();
+            _logger = services.GetRequiredService<LoggingService>();
+            _commands = services.GetRequiredService<CommandHandler>();
+            _http = services.GetRequiredService<HttpService>();
         }
 
         [Command("ping"), Summary("Must do something..")]
@@ -112,6 +127,32 @@ namespace VanillaBot.Modules
             }
 
             await ReplyAsync("", false, builder.Build());
+        }
+
+        [Command("info"), Alias("information")]
+        [Summary("Get information about the bot's environment, current stats, and repository.")]
+        public async Task Stats()
+        {
+            GithubCommit lastCommit = (await _http.GetObjectAsync<List<GithubCommit>>("https://api.github.com/repos/xoltia/VanillaBot/commits"))[0];
+            List<CommitActivity> commitActivity = await _http.GetObjectAsync<List<CommitActivity>>("https://api.github.com/repos/xoltia/VanillaBot/stats/commit_activity");
+
+            Embed embed = new EmbedBuilder()
+                .WithTitle("**Bot Information**")
+                .WithDescription($"**Stats**\n" +
+                $"Duration: {DateTime.Now - Process.GetCurrentProcess().StartTime}\n" +
+                $"Commands executed: {_commands.CommandsExecuted}\n" +
+                $"\n**Environment**\n" +
+                $"Discord.NET version: {FileVersionInfo.GetVersionInfo(Path.GetFullPath("Discord.Net.Core.dll")).FileVersion}\n." +
+                $"NET Version: {Environment.Version}\n" +
+                $"Host OS: {Environment.OSVersion} ({(Environment.Is64BitOperatingSystem ? 64 : 32)} bit)\n" +
+                $"Host CPU count: {Environment.ProcessorCount}\n" +
+                $"\n**Repository**\n" +
+                $"Last commit: {lastCommit.Commit.Message}\n" +
+                $"Commits this week: {commitActivity[51].Total}\n" +
+                $"Commits this year: {commitActivity.Sum(c => c.Total)}")
+                .Build();
+
+            await ReplyAsync(embed: embed);
         }
     }
 }

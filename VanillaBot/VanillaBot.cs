@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -53,6 +54,8 @@ namespace VanillaBot
                 .AddSingleton<LoggingService>()
                 .AddTransient<PointsService>()
                 .AddSingleton<Random>()
+                .AddSingleton<HttpClient>()
+                .AddSingleton<HttpService>()
                 .BuildServiceProvider();
         }
 
