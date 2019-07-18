@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VanillaBot.Modules.Basics
+namespace VanillaBot.Modules.General
 {
     public partial class GithubCommit
     {

@@ -14,13 +14,13 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using VanillaBot.Modules.Basics;
+using VanillaBot.Modules.General;
 using VanillaBot.Services;
 
 namespace VanillaBot.Modules
 {
-    [Name("basics")]
-    public class BasicCommands : ModuleBase<SocketCommandContext>
+    [Name("general")]
+    public class GeneralCommands : ModuleBase<SocketCommandContext>
     {
         private readonly CommandService _commandService;
         private readonly IConfiguration _config;
@@ -29,7 +29,7 @@ namespace VanillaBot.Modules
         private readonly HttpService _http;
         private readonly CommandHandler _commands;
 
-        public BasicCommands(IServiceProvider services)
+        public GeneralCommands(IServiceProvider services)
         {
             _commandService = services.GetRequiredService<CommandService>();
             _config = services.GetRequiredService<IConfiguration>();
@@ -133,6 +133,7 @@ namespace VanillaBot.Modules
         [Summary("Get information about the bot's environment, current stats, and repository.")]
         public async Task Stats()
         {
+            // TODO: cache for a certain amount of time since it probably won't change too often
             GithubCommit lastCommit = (await _http.GetObjectAsync<List<GithubCommit>>("https://api.github.com/repos/xoltia/VanillaBot/commits"))[0];
             List<CommitActivity> commitActivity = await _http.GetObjectAsync<List<CommitActivity>>("https://api.github.com/repos/xoltia/VanillaBot/stats/commit_activity");
 
@@ -141,11 +142,12 @@ namespace VanillaBot.Modules
                 .WithDescription($"**Stats**\n" +
                 $"Duration: {DateTime.Now - Process.GetCurrentProcess().StartTime}\n" +
                 $"Commands executed: {_commands.CommandsExecuted}\n" +
+                $"Guilds: {Context.Client.Guilds.Count}\n" +
                 $"\n**Environment**\n" +
                 $"Discord.NET version: {FileVersionInfo.GetVersionInfo(Path.GetFullPath("Discord.Net.Core.dll")).FileVersion}\n." +
                 $"NET Version: {Environment.Version}\n" +
                 $"Host OS: {Environment.OSVersion} ({(Environment.Is64BitOperatingSystem ? 64 : 32)} bit)\n" +
-                $"Host CPU count: {Environment.ProcessorCount}\n" +
+                $"Host processor count: {Environment.ProcessorCount}\n" +
                 $"\n**Repository**\n" +
                 $"Last commit: {lastCommit.Commit.Message}\n" +
                 $"Commits this week: {commitActivity[51].Total}\n" +
