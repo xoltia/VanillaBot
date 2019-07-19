@@ -7,8 +7,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -29,6 +31,8 @@ namespace VanillaBot.Modules
         private readonly HttpService _http;
         private readonly CommandHandler _commands;
 
+        const string DefaultASCII = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+
         public GeneralCommands(IServiceProvider services)
         {
             _commandService = services.GetRequiredService<CommandService>();
@@ -37,6 +41,57 @@ namespace VanillaBot.Modules
             _logger = services.GetRequiredService<LoggingService>();
             _commands = services.GetRequiredService<CommandHandler>();
             _http = services.GetRequiredService<HttpService>();
+        }
+
+        // TODO: custom type reader
+        // Allow for custom pixel characters
+        // Move to different module?
+        [Command("ascii")]
+        [Summary("Create ASCII art from an image, send attachment of image with message.")]
+        public async Task ASCII(string option = null)
+        {
+            Attachment attachment = Context.Message.Attachments.FirstOrDefault();
+            if (attachment == null)
+            {
+                await ReplyAsync("Please give me an image.");
+                return;
+            }
+
+            bool invert = !string.IsNullOrEmpty(option) && option.ToLower() == "invert";
+            string pixelCharacters = DefaultASCII;
+
+            if (invert)
+            {
+                char[] asciiChars = DefaultASCII.ToCharArray();
+                Array.Reverse(asciiChars);
+                pixelCharacters = asciiChars.ToString();
+            }
+
+            using (WebClient client = new WebClient())
+            {
+                Stream imageStream = await client.OpenReadTaskAsync(new Uri(attachment.Url));
+                Bitmap original = new Bitmap(imageStream);
+                Bitmap image = new Bitmap(original, new Size(original.Width * 2, original.Height));
+
+                List<char> chars = new List<char>(image.Height * image.Width + image.Height);
+
+                for (int y = 0; y < image.Height; y++)
+                {
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        System.Drawing.Color pixel = image.GetPixel(x, y);
+                        int normalizedGrayscale = (int)((0.299 * pixel.R + 0.587 * pixel.G + 0.114 * pixel.B) / byte.MaxValue * (pixelCharacters.Length - 1));
+                        chars.Add(pixelCharacters[normalizedGrayscale]);
+                    }
+                    chars.Add('\n');
+                }
+
+                // Find way to not have the memory being copied around
+                using (MemoryStream memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(new string(chars.ToArray()))))
+                {
+                    await Context.Message.Channel.SendFileAsync(memoryStream, $"{attachment.Filename}{(invert ? "-inverted-" : "-")}ASCII.txt");
+                }
+            }
         }
 
         [Command("ping"), Summary("Must do something..")]
