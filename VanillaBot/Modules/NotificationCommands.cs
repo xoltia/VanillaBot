@@ -22,6 +22,7 @@ namespace VanillaBot.Modules
 
         [Command]
         [Summary("Start receiving notifications for a certain user.")]
+        [RequireContext(ContextType.Guild)]
         public async Task NewNotification(IUser user)
         {
             string opter = Context.Message.Author.Id.ToString();

@@ -76,7 +76,7 @@ namespace VanillaBot.Services
             int argPos = 0;
 
             if (!(socketMessage is SocketUserMessage message) || message.Source != MessageSource.User ||
-               (!message.HasMentionPrefix(_client.CurrentUser, ref argPos) && !message.HasStringPrefix(_prefix, ref argPos)))
+               (!message.HasMentionPrefix(_client.CurrentUser, ref argPos) && !message.HasStringPrefix(_prefix, ref argPos)) && !(socketMessage.Channel is SocketDMChannel))
             {
                 return;
             }
