@@ -189,8 +189,8 @@ namespace VanillaBot.Modules
         public async Task Stats()
         {
             // TODO: cache for a certain amount of time since it probably won't change too often
-            GithubCommit lastCommit = (await _http.GetObjectAsync<List<GithubCommit>>("https://api.github.com/repos/xoltia/VanillaBot/commits"))[0];
-            List<CommitActivity> commitActivity = await _http.GetObjectAsync<List<CommitActivity>>("https://api.github.com/repos/xoltia/VanillaBot/stats/commit_activity");
+            List<GithubCommit> commits = await _http.GetObjectAsync<List<GithubCommit>>("https://api.github.com/repos/xoltia/VanillaBot/commits", TimeSpan.FromMinutes(5));
+            List<CommitActivity> commitActivity = await _http.GetObjectAsync<List<CommitActivity>>("https://api.github.com/repos/xoltia/VanillaBot/stats/commit_activity", TimeSpan.FromMinutes(5));
 
             Embed embed = new EmbedBuilder()
                 .WithTitle("**Bot Information**")
@@ -204,7 +204,7 @@ namespace VanillaBot.Modules
                 $"Host OS: {Environment.OSVersion} ({(Environment.Is64BitOperatingSystem ? 64 : 32)} bit)\n" +
                 $"Host processor count: {Environment.ProcessorCount}\n" +
                 $"\n**Repository**\n" +
-                $"Last commit: {lastCommit.Commit.Message}\n" +
+                $"Last commit: {commits[0].Commit.Message}\n" +
                 $"Commits this week: {commitActivity[51].Total}\n" +
                 $"Commits this year: {commitActivity.Sum(c => c.Total)}")
                 .Build();

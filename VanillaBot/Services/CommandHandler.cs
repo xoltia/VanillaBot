@@ -21,7 +21,7 @@ namespace VanillaBot.Services
 
         private readonly string _prefix;
 
-        public UInt64 CommandsExecuted { get; private set; } = 0;
+        public ulong CommandsExecuted { get; private set; } = 0;
 
         public CommandHandler(IServiceProvider services)
         {
