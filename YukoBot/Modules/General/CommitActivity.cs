@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VanillaBot.Modules.General
+namespace YukoBot.Modules.General
 {
     public class CommitActivity
     {

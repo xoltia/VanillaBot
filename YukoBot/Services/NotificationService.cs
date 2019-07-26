@@ -5,18 +5,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VanillaBot.Services.Database;
-using VanillaBot.Services.Database.Models;
+using YukoBot.Services.Database;
+using YukoBot.Services.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace VanillaBot.Services
+namespace YukoBot.Services
 {
     public class NotificationService
     {
         private readonly DiscordSocketClient _client;
-        private readonly VanillaContext _db;
+        private readonly YukoContext _db;
 
-        public NotificationService(DiscordSocketClient client, VanillaContext dbContext)
+        public NotificationService(DiscordSocketClient client, YukoContext dbContext)
         {
             _client = client;
             _db = dbContext;

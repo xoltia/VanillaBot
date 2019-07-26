@@ -1,7 +1,7 @@
-# VanillaBot
+# YukoBot
 [![Discord Bots](https://discordbots.org/api/widget/status/594111117513719838.svg)](https://discordbots.org/bot/594111117513719838)
 
-Vanilla is a general purpose Discord bot that's main current feature is online and game notifications,
+Yuko is a general purpose Discord bot that's main current feature is online and game notifications,
 which Discord currently lacks. To add the bot to your server use [this link.](https://discordapp.com/oauth2/authorize?client_id=594111117513719838&scope=bot&permissions=8)
 
 ## Points

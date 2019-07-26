@@ -5,17 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VanillaBot.Services.Database;
-using VanillaBot.Services.Database.Models;
+using YukoBot.Services.Database;
+using YukoBot.Services.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace VanillaBot.Modules
+namespace YukoBot.Modules
 {
     [Group("notify")]
     public class NotificationCommands : ModuleBase<SocketCommandContext>
     {
-        private readonly VanillaContext _db;
-        public NotificationCommands(VanillaContext dbContext)
+        private readonly YukoContext _db;
+        public NotificationCommands(YukoContext dbContext)
         {
             _db = dbContext;
         }
@@ -146,9 +146,9 @@ namespace VanillaBot.Modules
         [Group("game")]
         public class GameNotificationCommands : ModuleBase<SocketCommandContext>
         {
-            private readonly VanillaContext _db;
+            private readonly YukoContext _db;
 
-            public GameNotificationCommands(VanillaContext dbContext)
+            public GameNotificationCommands(YukoContext dbContext)
             {
                 _db = dbContext;
             }

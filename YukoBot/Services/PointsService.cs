@@ -7,19 +7,19 @@ using System.Text;
 using System.Timers;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using VanillaBot.Services.Database;
+using YukoBot.Services.Database;
 using Discord;
-using VanillaBot.Services.Database.Models;
+using YukoBot.Services.Database.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 
-namespace VanillaBot.Services
+namespace YukoBot.Services
 {
     public class PointsService
     {
         private readonly DiscordSocketClient _client;
         private readonly ConfigService _config;
-        private readonly VanillaContext _db;
+        private readonly YukoContext _db;
         private readonly LoggingService _logger;
 
         private readonly float _bonusReset;
@@ -33,7 +33,7 @@ namespace VanillaBot.Services
             _client = services.GetRequiredService<DiscordSocketClient>();
             _config = services.GetRequiredService<ConfigService>();
             _logger = services.GetRequiredService<LoggingService>();
-            _db = services.GetRequiredService<VanillaContext>();
+            _db = services.GetRequiredService<YukoContext>();
 
             _messageBonus = _config.GetConfigOption("points:messageBonus", 1, int.TryParse);
             _bonusReset = _config.GetConfigOption("points:bonusReset", 30f, float.TryParse);

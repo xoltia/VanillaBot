@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VanillaBot.Services
+namespace YukoBot.Services
 {
     public class HttpService
     {
@@ -20,7 +20,7 @@ namespace VanillaBot.Services
             _cache = new MemoryCache(new MemoryCacheOptions());
 
             string userAgent = config["userAgent"];
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", string.IsNullOrEmpty(userAgent) ? "VanillaBot (https://github.com/xoltia/VanillaBot)" : userAgent);
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", string.IsNullOrEmpty(userAgent) ? "YukoBot (https://github.com/xoltia/YukoBot)" : userAgent);
         }
 
         public async Task<string> GetContent(string url)

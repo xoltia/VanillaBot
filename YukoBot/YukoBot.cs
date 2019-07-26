@@ -12,18 +12,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using VanillaBot.Services;
-using VanillaBot.Services.Database;
+using YukoBot.Services;
+using YukoBot.Services.Database;
 
-namespace VanillaBot
+namespace YukoBot
 {
-    public class VanillaBot
+    public class YukoBot
     {
         private readonly DiscordSocketClient _client;
         private readonly IServiceProvider _services;
         private IConfiguration _config;
 
-        public VanillaBot()
+        public YukoBot()
         {
             _client = new DiscordSocketClient();
             _client.Ready += Ready;
@@ -42,7 +42,7 @@ namespace VanillaBot
             }
 
             _services = new ServiceCollection()
-                .AddDbContext<VanillaContext>(ServiceLifetime.Transient)
+                .AddDbContext<YukoContext>(ServiceLifetime.Transient)
                 .AddSingleton(_client)
                 .AddSingleton(_config)
                 .AddSingleton(new CommandService(new CommandServiceConfig() {
@@ -73,7 +73,7 @@ namespace VanillaBot
                 string.IsNullOrEmpty(_config["game:url"]) ? null : _config["game:url"],
                 Enum.TryParse(_config["game:type"], out activityType) ? activityType : ActivityType.Playing);
 
-            await _services.GetRequiredService<LoggingService>().Info("VanillaBot", $"In {_client.Guilds.Count} servers.");
+            await _services.GetRequiredService<LoggingService>().Info("YukoBot", $"In {_client.Guilds.Count} servers.");
         }
 
         public async Task Start(string token)

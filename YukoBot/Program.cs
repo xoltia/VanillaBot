@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-namespace VanillaBot
+namespace YukoBot
 {
     class Program
     {
@@ -12,9 +12,9 @@ namespace VanillaBot
 
         public async Task MainAsync()
         {
-            Console.Title = "VanillaBot";
+            Console.Title = "YukoBot";
 
-            VanillaBot bot = new VanillaBot();
+            YukoBot bot = new YukoBot();
             await bot.StartFromConfig();
             await Task.Delay(-1);
         }

@@ -16,10 +16,10 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using VanillaBot.Modules.General;
-using VanillaBot.Services;
+using YukoBot.Modules.General;
+using YukoBot.Services;
 
-namespace VanillaBot.Modules
+namespace YukoBot.Modules
 {
     [Name("general")]
     public class GeneralCommands : ModuleBase<SocketCommandContext>
@@ -188,9 +188,8 @@ namespace VanillaBot.Modules
         [Summary("Get information about the bot's environment, current stats, and repository.")]
         public async Task Stats()
         {
-            // TODO: cache for a certain amount of time since it probably won't change too often
-            List<GithubCommit> commits = await _http.GetObjectAsync<List<GithubCommit>>("https://api.github.com/repos/xoltia/VanillaBot/commits", TimeSpan.FromMinutes(5));
-            List<CommitActivity> commitActivity = await _http.GetObjectAsync<List<CommitActivity>>("https://api.github.com/repos/xoltia/VanillaBot/stats/commit_activity", TimeSpan.FromMinutes(5));
+            List<GithubCommit> commits = await _http.GetObjectAsync<List<GithubCommit>>("https://api.github.com/repos/xoltia/YukoBot/commits", TimeSpan.FromMinutes(5));
+            List<CommitActivity> commitActivity = await _http.GetObjectAsync<List<CommitActivity>>("https://api.github.com/repos/xoltia/YukoBot/stats/commit_activity", TimeSpan.FromMinutes(5));
 
             Embed embed = new EmbedBuilder()
                 .WithTitle("**Bot Information**")

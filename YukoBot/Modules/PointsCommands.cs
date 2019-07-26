@@ -7,22 +7,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VanillaBot.Services;
-using VanillaBot.Services.Database;
-using VanillaBot.Services.Database.Models;
+using YukoBot.Services;
+using YukoBot.Services.Database;
+using YukoBot.Services.Database.Models;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Drawing;
 using System.IO;
 
-namespace VanillaBot.Modules
+namespace YukoBot.Modules
 {
     [Group("points")]
     public class PointsCommands : ModuleBase<SocketCommandContext>
     {
         private readonly PointsService _points;
-        private readonly VanillaContext _db;
+        private readonly YukoContext _db;
 
-        public PointsCommands(PointsService points, VanillaContext dbContext)
+        public PointsCommands(PointsService points, YukoContext dbContext)
         {
             _points = points;
             _db = dbContext;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VanillaBot.Services.Database.Models
+namespace YukoBot.Services.Database.Models
 {
     public class Points
     {

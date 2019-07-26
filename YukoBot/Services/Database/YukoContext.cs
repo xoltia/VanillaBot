@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using VanillaBot.Services.Database.Models;
+using YukoBot.Services.Database.Models;
 
-namespace VanillaBot.Services.Database
+namespace YukoBot.Services.Database
 {
-    public class VanillaContext : DbContext
+    public class YukoContext : DbContext
     {
         private readonly IConfiguration _config;
 
@@ -19,7 +19,7 @@ namespace VanillaBot.Services.Database
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<GameNotification> GameNotifications { get; set; }
 
-        public VanillaContext(DbContextOptions<VanillaContext> options, IConfiguration config)
+        public YukoContext(DbContextOptions<YukoContext> options, IConfiguration config)
             : base(options)
         {
             _config = config;

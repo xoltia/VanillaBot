@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B427447C-354C-45F1-9A5E-3567F6BEF5D3}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>VanillaBot</RootNamespace>
-    <AssemblyName>VanillaBot</AssemblyName>
+    <RootNamespace>YukoBot</RootNamespace>
+    <AssemblyName>YukoBot</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -47,7 +47,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>vanilla-bgc.ico</ApplicationIcon>
+    <ApplicationIcon>yukoface-bg.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Discord.Net.Commands, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -237,12 +237,12 @@
     <Compile Include="Services\Database\Models\GameNotification.cs" />
     <Compile Include="Services\Database\Models\Notification.cs" />
     <Compile Include="Services\Database\Models\Points.cs" />
-    <Compile Include="Services\Database\VanillaContext.cs" />
+    <Compile Include="Services\Database\YukoContext.cs" />
     <Compile Include="Services\HttpService.cs" />
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\PointsService.cs" />
-    <Compile Include="VanillaBot.cs" />
+    <Compile Include="YukoBot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -264,7 +264,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="vanilla-bgc.ico" />
+    <Content Include="yukoface-bg.ico" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

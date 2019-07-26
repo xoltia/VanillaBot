@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VanillaBot.Modules.Gambling
+namespace YukoBot.Modules.Gambling
 {
     public enum Coin
     {

@@ -10,7 +10,7 @@ using Discord;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
-namespace VanillaBot.Services
+namespace YukoBot.Services
 {
     class CommandHandler
     {

@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using VanillaBot.Modules.Gambling;
-using VanillaBot.Services;
-using VanillaBot.Services.Database.Models;
+using YukoBot.Modules.Gambling;
+using YukoBot.Services;
+using YukoBot.Services.Database.Models;
 
-namespace VanillaBot.Modules
+namespace YukoBot.Modules
 {
     [Name("gambling")]
     public class GambleCommands : ModuleBase<SocketCommandContext>

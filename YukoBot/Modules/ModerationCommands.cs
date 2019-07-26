@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VanillaBot.Modules
+namespace YukoBot.Modules
 {
     [Name("moderation")]
     public class ModerationCommands : ModuleBase<SocketCommandContext>
     {
         // TODO: add per guild configuration or at least bot configuration
-        private const string muteRoleName = "vanilla-muted";
+        private const string muteRoleName = "yuko-muted";
 
         [Group("ban"), Alias("banish", "removeof", "destroy")]
         [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
@@ -42,7 +42,7 @@ namespace VanillaBot.Modules
                     return;
                 }
 
-                await member.BanAsync(reason: reason + $" (banned by {Context.User.Username} using VanillaBot)");
+                await member.BanAsync(reason: reason + $" (banned by {Context.User.Username} using YukoBot)");
                 await ReplyAsync("I didn't like that guy anyways.");
             }
         }
