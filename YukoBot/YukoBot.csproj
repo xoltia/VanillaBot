@@ -229,6 +229,8 @@
     <Compile Include="Modules\ModerationCommands.cs" />
     <Compile Include="Modules\NotificationCommands.cs" />
     <Compile Include="Modules\PointsCommands.cs" />
+    <Compile Include="Modules\SearchCommands.cs" />
+    <Compile Include="Modules\Search\StackOverflowSearch.cs" />
     <Compile Include="Services\CommandHandler.cs" />
     <Compile Include="Modules\GeneralCommands.cs" />
     <Compile Include="Program.cs" />

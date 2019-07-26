@@ -12,15 +12,20 @@ namespace YukoBot.Services
     public class HttpService
     {
         private readonly HttpClient _httpClient;
+        private readonly HttpClientHandler _handler;
         private readonly MemoryCache _cache;
 
         public HttpService(HttpClient httpClient, IConfiguration config)
         {
-            _httpClient = new HttpClient();
+            _handler = new HttpClientHandler();
+            _handler.AutomaticDecompression = System.Net.DecompressionMethods.GZip;
+
+            _httpClient = new HttpClient(_handler);
             _cache = new MemoryCache(new MemoryCacheOptions());
 
             string userAgent = config["userAgent"];
             _httpClient.DefaultRequestHeaders.Add("User-Agent", string.IsNullOrEmpty(userAgent) ? "YukoBot (https://github.com/xoltia/YukoBot)" : userAgent);
+            _httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip");
         }
 
         public async Task<string> GetContent(string url)
@@ -46,7 +51,6 @@ namespace YukoBot.Services
             {
                 content = await GetContent(url);
             }
-
             return JsonConvert.DeserializeObject<T>(content);
         }
 
