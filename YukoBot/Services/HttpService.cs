@@ -54,6 +54,34 @@ namespace YukoBot.Services
             return JsonConvert.DeserializeObject<T>(content);
         }
 
+        // TODO: separate all the identical code into a reusable function... somehow
+
+        public async Task<string> GetContent(HttpRequestMessage req)
+        {
+            HttpResponseMessage response = await _httpClient.SendAsync(req);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<T> GetObjectAsync<T>(HttpRequestMessage req, TimeSpan? cacheDuration = null)
+        {
+            string content;
+
+            if (cacheDuration != null)
+            {
+                content = await _cache.GetOrCreateAsync(req.RequestUri.ToString(), async (ICacheEntry entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = cacheDuration;
+                    return await GetContent(req);
+                });
+            }
+            else if (!_cache.TryGetValue(req.RequestUri.ToString(), out content))
+            {
+                content = await GetContent(req);
+            }
+            return JsonConvert.DeserializeObject<T>(content);
+        }
+
         // Don't need right now but here for completeness sake.
         public Task<HttpResponseMessage> PostObjectAsync(string url, object obj)
         {
