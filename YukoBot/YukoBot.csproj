@@ -226,6 +226,7 @@
     <Compile Include="Modules\General\CommitActivity.cs" />
     <Compile Include="Modules\Gambling\Coin.cs" />
     <Compile Include="Modules\GambleCommands.cs" />
+    <Compile Include="Modules\ImageCommands.cs" />
     <Compile Include="Modules\ModerationCommands.cs" />
     <Compile Include="Modules\NotificationCommands.cs" />
     <Compile Include="Modules\PointsCommands.cs" />
@@ -245,7 +246,7 @@
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\PointsService.cs" />
-    <Compile Include="YukoBot.cs" />
+    <Compile Include="Core\YukoBot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

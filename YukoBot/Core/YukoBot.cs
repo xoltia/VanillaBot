@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using YukoBot.Services;
 using YukoBot.Services.Database;
 
-namespace YukoBot
+namespace YukoBot.Core
 {
     public class YukoBot
     {

@@ -84,7 +84,7 @@ namespace YukoBot.Modules
         // TODO: per guild leaderboard
 
         [Command("leaderboard")]
-        public async Task TopPotints()
+        public async Task Leaderboard()
         {
             Points[] points = await _db.Points.OrderByDescending(p => p.Amount).Take(5).ToArrayAsync();
 
@@ -140,9 +140,9 @@ namespace YukoBot.Modules
             chart.SaveImage(fileStream, ChartImageFormat.Png);
 
             fileStream.Position = 0;
-            await Context.Channel.SendFileAsync(fileStream, "graph.png", embed: embed.WithImageUrl("attachment://graph.png").Build()).ConfigureAwait(false);
+            await Context.Message.Channel.SendFileAsync(fileStream, "graph.png", embed: embed.WithImageUrl("attachment://graph.png").Build());
 
-            fileStream.Close();
+            fileStream.Dispose();
             chart.Dispose();
         }
     }
