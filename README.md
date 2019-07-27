@@ -47,7 +47,13 @@ Here's a list of the current commands.
 * !coin &lt;guess&gt; &lt;amount&gt;
 * !slot &lt;amount&gt;
 
-#### basics
+#### general
 * !ping 
+* !info
 * !help 
 * !help &lt;command&gt;
+* !ascii &lt;option?&gt; (include image attachment)
+
+#### search
+* !bing &lt;search&gt;
+* !stackoverflow &lt;question&gt;
