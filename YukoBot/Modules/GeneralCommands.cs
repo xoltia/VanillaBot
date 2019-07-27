@@ -156,6 +156,22 @@ namespace YukoBot.Modules
             await ReplyAsync(embed: embed);
         }
 
+        [Command("say")]
+        [RequireOwner]
+        public async Task Say(ITextChannel channel, [Remainder]string content)
+        {
+            await channel.SendMessageAsync(content);
+            await ReplyAsync($"Sent message to {channel.Name}");
+        }
+
+        [Command("message"), Alias("msg")]
+        [RequireOwner]
+        public async Task Message(IUser user, [Remainder]string content)
+        {
+            await user.SendMessageAsync(content);
+            await ReplyAsync($"Sent message to {user.Username}");
+        }
+
         [Command("eval")]
         [RequireOwner]
         public async Task Eval([Remainder]string source)
