@@ -1,18 +1,15 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.CSharp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -157,6 +154,81 @@ namespace YukoBot.Modules
                 .Build();
 
             await ReplyAsync(embed: embed);
+        }
+
+        [Command("eval")]
+        [RequireOwner]
+        public async Task Eval([Remainder]string source)
+        {
+            if (source.StartsWith("```"))
+            {
+                source = source.Remove(0, 3);
+
+                if (source.StartsWith("cs"))
+                    source = source.Remove(0, 2);
+
+                if (source.EndsWith("```"))
+                    source = source.Remove(source.Length - 3, 3);
+
+            }
+            else if (source.StartsWith("`"))
+            {
+                source = source.Remove(0, 1);
+
+                if (source.EndsWith("`"))
+                    source = source.Remove(source.Length - 1, 1);
+            }
+
+            CSharpCodeProvider provider = new CSharpCodeProvider();
+            CompilerParameters compilerParams = new CompilerParameters
+            {
+                GenerateInMemory = true,
+                GenerateExecutable = false,
+                ReferencedAssemblies = {
+                    "Discord.Net.Core.dll",
+                    "Discord.Net.Commands.dll",
+                    "Discord.Net.WebSocket.dll",
+                    "Discord.Net.Rest.dll",
+                    "System.dll" },
+            };
+
+            CompilerResults result = provider.CompileAssemblyFromSource(compilerParams,
+                "using System;" +
+                "using Discord; " +
+                "using Discord.WebSocket;" +
+                "using Discord.Commands;" +
+                "public class Eval { " +
+                "   public object Run(SocketCommandContext Context) { " +
+                        source +
+                "   }" +
+                "}"
+            );
+
+            EmbedBuilder embed = new EmbedBuilder();
+
+            if (result.Errors.Count != 0)
+            {
+                embed.Title = "Failed to compile";
+                embed.Description = "Here's the errors:\n";
+                embed.Color = Color.Red;
+
+                foreach (CompilerError error in result.Errors)
+                {
+                    embed.Description += $"{error.ErrorNumber}: {error.ErrorText}\n";
+                }
+                await ReplyAsync(embed: embed.Build());
+                return;
+            }
+
+            object eval = result.CompiledAssembly.CreateInstance("Eval");
+            MethodInfo method = eval.GetType().GetMethod("Run");
+            object evalReturn = method.Invoke(eval, new object[]{ Context });
+
+            embed.Title = "Successfully ran";
+            embed.Description = $"Here's the output:\n`{evalReturn}`";
+            embed.Color = Color.Green;
+
+            await ReplyAsync(embed: embed.Build());
         }
     }
 }
