@@ -97,7 +97,7 @@ namespace YukoBot.Modules
                 SocketUser user = Context.Client.GetUser(ulong.Parse(points[i].UserId));
                 embed.AddField(f =>
                 {
-                    f.Name = user.Username + "#" + user.Discriminator;
+                    f.Name = user == null ? "Unknown" : $"{user.Username}#{user.Discriminator}";
                     f.Value = points[i].Amount;
                     f.IsInline = true;
                 });
@@ -124,11 +124,11 @@ namespace YukoBot.Modules
             Series barSeries = new Series();
             barSeries.Color = System.Drawing.Color.FromArgb(255, 192, 203);
             barSeries.Points.DataBindXY(
-                points.Select(p => {
+                points.Select(p =>
+                {
                     // TODO: only do this once above?
                     SocketUser user = Context.Client.GetUser(ulong.Parse(p.UserId));
-                    string username = user.Username;
-                    return (username.Length > 10 ? username.Substring(0, 10) + "..." : username) + "#" + user.Discriminator;
+                    return user == null ? "Unknown" : $"{(user.Username.Length > 10 ? user.Username.Substring(0, 10) + "..." : user.Username)}#{user.Discriminator}";
                 }).ToList(),
                 points.Select(p => p.Amount).ToList()
             );
