@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -64,11 +65,13 @@ namespace YukoBot.Modules
                 await ReplyAsync("Bing hasn't been setup.");
                 return;
             }
-
+            
             string escapedSearch = Uri.EscapeDataString(search);
+            string safeSearch = Context.Channel is ITextChannel text && text.IsNsfw ? "Off" : "Strict";
+
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri(bingSearchEndpoint + $"/search?count=5&q={escapedSearch}"),
+                RequestUri = new Uri(bingSearchEndpoint + $"/search?count=5&q={escapedSearch}&safeSearch={safeSearch}"),
                 Method = HttpMethod.Get,
                 Headers =
                 {
@@ -86,7 +89,8 @@ namespace YukoBot.Modules
             EmbedBuilder embedBuilder = new EmbedBuilder()
                 .WithTitle($"For more results go to the Bing page.")
                 .WithUrl(response.WebPages.WebSearchURL)
-                .WithAuthor("Bing Results", "https://i.ibb.co/f94KyMB/bing.png");
+                .WithAuthor("Bing Results", "https://i.ibb.co/f94KyMB/bing.png")
+                .WithFooter($"SafeSearch is set to {safeSearch} because your channel {(safeSearch == "Strict" ? "isn't" : "is")} NSFW.");
 
             foreach (WebPage q in response.WebPages.Value)
             {
