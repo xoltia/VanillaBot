@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace YukoBot.Modules
 {
+    [Name("Notifications")]
     [Group("notify")]
     public class NotificationCommands : ModuleBase<SocketCommandContext>
     {

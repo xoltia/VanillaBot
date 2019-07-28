@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace YukoBot.Modules
 {
-    [Name("moderation")]
+    [Name("Moderation")]
     public class ModerationCommands : ModuleBase<SocketCommandContext>
     {
         // TODO: add per guild configuration or at least bot configuration

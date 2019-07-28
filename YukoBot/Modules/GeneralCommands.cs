@@ -18,7 +18,7 @@ using YukoBot.Services;
 
 namespace YukoBot.Modules
 {
-    [Name("general")]
+    [Name("General")]
     public class GeneralCommands : ModuleBase<SocketCommandContext>
     {
         private readonly CommandService _commandService;

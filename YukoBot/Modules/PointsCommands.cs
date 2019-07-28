@@ -16,7 +16,7 @@ using System.IO;
 
 namespace YukoBot.Modules
 {
-    [Group("points")]
+    [Group("Points")]
     public class PointsCommands : ModuleBase<SocketCommandContext>
     {
         private readonly PointsService _points;

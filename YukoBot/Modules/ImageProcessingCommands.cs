@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace YukoBot.Modules
 {
-    [Name("image processing")]
+    [Name("Image Processing")]
     public class ImageProcessingCommands : ModuleBase<SocketCommandContext>
     {
         private const string DefaultASCII = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";

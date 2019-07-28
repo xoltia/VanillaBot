@@ -11,7 +11,7 @@ using YukoBot.Services.Database.Models;
 
 namespace YukoBot.Modules
 {
-    [Name("gambling")]
+    [Name("Gambling")]
     public class GambleCommands : ModuleBase<SocketCommandContext>
     {
         private readonly PointsService _points;

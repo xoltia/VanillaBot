@@ -11,7 +11,7 @@ using YukoBot.Services;
 
 namespace YukoBot.Modules
 {
-    [Name("image")]
+    [Name("Images")]
     public class RandomImageCommands : ModuleBase<SocketCommandContext>
     {
         private readonly HttpService _http;

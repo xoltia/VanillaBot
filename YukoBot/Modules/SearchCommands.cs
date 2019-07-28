@@ -13,7 +13,7 @@ using YukoBot.Services;
 
 namespace YukoBot.Modules
 {
-    [Name("search")]
+    [Name("Search")]
     public class SearchCommands : ModuleBase<SocketCommandContext>
     {
         private readonly HttpService _http;
