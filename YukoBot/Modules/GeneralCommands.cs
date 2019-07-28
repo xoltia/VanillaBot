@@ -156,6 +156,22 @@ namespace YukoBot.Modules
             await ReplyAsync(embed: embed);
         }
 
+        [Command("changelog"), Alias("changes")]
+        public async Task Changelog()
+        {
+            List<GithubCommit> commits = await _http.GetObjectAsync<List<GithubCommit>>("https://api.github.com/repos/xoltia/YukoBot/commits", TimeSpan.FromMinutes(5));
+
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithTitle("Change log");
+
+            foreach (GithubCommit commit in commits.Take(5))
+            {
+                embed.Description += commit.Commit.Message + "\n";
+            }
+
+            await ReplyAsync(embed: embed.Build());
+        }
+
         [Command("say")]
         [RequireOwner]
         public async Task Say(ITextChannel channel, [Remainder]string content)
