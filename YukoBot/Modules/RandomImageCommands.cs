@@ -21,31 +21,46 @@ namespace YukoBot.Modules
             _http = http;
         }
 
-        // Promise I'm not a weeb
-        [Command("kitsune")]
-        [Summary("Sends random kitsune image.")]
-        public async Task Kitsune()
+        private async Task<string> GetNekosLifeImageUrl(string endpoint)
         {
-            string response = await _http.GetContent("https://api.nekos.dev/api/v3/images/sfw/img/kitsune/");
+            string response = await _http.GetContent("https://api.nekos.dev/api/v3/images" + endpoint);
             JObject json = JsonConvert.DeserializeObject<JObject>(response);
-            // TODO: error checking
-            string url = json["data"]["response"]["url"].ToString();
-            await ReplyAsync(embed: new EmbedBuilder()
+            if (json["data"]["status"]["code"].ToObject<int>() != 200)
+            {
+                throw new Exception(json["data"]["status"]["message"].ToString());
+            }
+            return json["data"]["response"]["url"].ToString();
+        }
+
+        private Task<IUserMessage> SendImageUrl(string url)
+        {
+            return ReplyAsync(embed: new EmbedBuilder()
                 .WithTitle("Link")
                 .WithUrl(url)
                 .WithImageUrl(url)
                 .Build());
         }
 
+        private async Task<IUserMessage> SendRandomImageUrl(string endpoint)
+        {
+            string url = await GetNekosLifeImageUrl(endpoint);
+            return await SendImageUrl(url);
+        }
+
+        // Promise I'm not a weeb
+        [Command("kitsune")]
+        [Summary("Sends random kitsune image.")]
+        public async Task Kitsune() =>
+            await SendRandomImageUrl("/sfw/img/kitsune");
+
+        [Command("neko")]
+        [Summary("Sends random neko image.")]
+        public async Task Neko() =>
+            await SendRandomImageUrl("/sfw/img/neko");
+
         [Command("yuko")]
         [Summary("Get the best kitsune image.")]
-        public async Task Yuko()
-        {
-            await ReplyAsync(embed: new EmbedBuilder()
-                .WithTitle("Link")
-                .WithUrl("https://static.xoltia.com/images/yuko.jpg")
-                .WithImageUrl("https://static.xoltia.com/images/yuko.jpg")
-                .Build());
-        }
+        public async Task Yuko() =>
+            await SendImageUrl("https://static.xoltia.com/images/yuko.jpg");
     }
 }
