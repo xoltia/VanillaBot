@@ -142,6 +142,7 @@ namespace YukoBot.Modules
                 $"Duration: {DateTime.Now - Process.GetCurrentProcess().StartTime}\n" +
                 $"Commands executed: {_commands.CommandsExecuted}\n" +
                 $"Guilds: {Context.Client.Guilds.Count}\n" +
+                $"RTT: {Context.Client.Latency}ms\n" +
                 $"\n**Environment**\n" +
                 $"Discord.NET version: {FileVersionInfo.GetVersionInfo(Path.GetFullPath("Discord.Net.Core.dll")).FileVersion}\n." +
                 $"NET Version: {Environment.Version}\n" +
