@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace YukoBot.Modules
 {
-    [Name("image")]
-    public class ImageCommands : ModuleBase<SocketCommandContext>
+    [Name("image processing")]
+    public class ImageProcessingCommands : ModuleBase<SocketCommandContext>
     {
         private const string DefaultASCII = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
         private static readonly HashSet<string> imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase){ ".png", ".jpg", ".jpeg", ".bmp", ".ico" };

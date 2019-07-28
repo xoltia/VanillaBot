@@ -157,6 +157,7 @@ namespace YukoBot.Modules
         }
 
         [Command("changelog"), Alias("changes")]
+        [Summary("Get last 5 commit messages from GitHub.")]
         public async Task Changelog()
         {
             List<GithubCommit> commits = await _http.GetObjectAsync<List<GithubCommit>>("https://api.github.com/repos/xoltia/YukoBot/commits", TimeSpan.FromMinutes(5));
