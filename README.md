@@ -50,10 +50,21 @@ Here's a list of the current commands.
 #### general
 * !ping 
 * !info
+* !changelog
 * !help 
 * !help &lt;command&gt;
-* !ascii &lt;option?&gt; (include image attachment)
 
 #### search
 * !bing &lt;search&gt;
 * !stackoverflow &lt;question&gt;
+* !whybing
+
+#### images
+* !neko
+* !kitsune
+* !yuko
+
+#### image processing
+(include image attachment with message)
+* !ascii
+* !grayscale
