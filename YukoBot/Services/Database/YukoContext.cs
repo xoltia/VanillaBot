@@ -18,6 +18,7 @@ namespace YukoBot.Services.Database
         public DbSet<Points> Points { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<GameNotification> GameNotifications { get; set; }
+        public DbSet<GuildConfig> GuildConfigs { get; set; }
 
         public YukoContext(DbContextOptions<YukoContext> options, IConfiguration config)
             : base(options)

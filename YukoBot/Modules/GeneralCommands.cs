@@ -27,6 +27,7 @@ namespace YukoBot.Modules
         private readonly LoggingService _logger;
         private readonly HttpService _http;
         private readonly CommandHandler _commands;
+        private readonly GuildConfigService _guildConfig;
 
         public GeneralCommands(IServiceProvider services)
         {
@@ -36,6 +37,7 @@ namespace YukoBot.Modules
             _logger = services.GetRequiredService<LoggingService>();
             _commands = services.GetRequiredService<CommandHandler>();
             _http = services.GetRequiredService<HttpService>();
+            _guildConfig = services.GetRequiredService<GuildConfigService>();
         }
 
 
@@ -45,10 +47,36 @@ namespace YukoBot.Modules
             await ReplyAsync("Pong!");
         }
 
+        [Command("prefix")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task Prefix(string prefix = null)
+        {
+            if (prefix == null)
+            {
+                await ReplyAsync($"The prefix for this guild is `{await _guildConfig.GetPrefix(Context.Guild)}`");
+                return;
+            }
+
+            if (prefix.Length > 5)
+            {
+                await ReplyAsync("Prefixes must be at most 5 characters.");
+                return;
+            }
+
+            await _guildConfig.SetPrefix(Context.Guild, prefix);
+            await ReplyAsync($"Set the guild prefix to `{prefix}`");
+        }
+
         [Command("help"), Summary("Shows list of commands.")]
         public async Task Help()
         {
-            string prefix = _config["prefix"];
+            string prefix;
+
+            if (Context.Guild != null)
+                prefix = await _guildConfig.GetPrefix(Context.Guild);
+            else
+                prefix = _config["prefix"];
+            
             EmbedBuilder builder = new EmbedBuilder()
                 .WithColor(0xffc0cb)
                 .WithTitle("These are the things I can do.")

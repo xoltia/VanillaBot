@@ -56,6 +56,7 @@ namespace YukoBot.Core
                 .AddSingleton<Random>()
                 .AddSingleton<HttpClient>()
                 .AddSingleton<HttpService>()
+                .AddSingleton<GuildConfigService>()
                 .BuildServiceProvider();
         }
 
