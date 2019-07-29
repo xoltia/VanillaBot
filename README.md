@@ -18,7 +18,16 @@ and **!notify game _&lt;game&gt;_** is turning on notifications for a specific g
 anyone on all of Xbox Live starts to play a game, just your friends.
 
 ## Commands
-Here's a list of the current commands.
+Here's a list of the current commands. Commands can be activated with prefixes, mentioning the bot, or DMing the bot.
+If you need to change the prefix without affecting the prefixes of other bots use the prefix command by mentioning Yuko.
+#### general
+* !ping 
+* !info
+* !changelog
+* !help 
+* !help &lt;command&gt;
+* !prefix
+
 #### notifications
 * !notify &lt;user&gt;
 * !notify disable &lt;user&gt;
@@ -47,13 +56,6 @@ Here's a list of the current commands.
 * !coin &lt;guess&gt; &lt;amount&gt;
 * !slot &lt;amount&gt;
 
-#### general
-* !ping 
-* !info
-* !changelog
-* !help 
-* !help &lt;command&gt;
-
 #### search
 * !bing &lt;search&gt;
 * !stackoverflow &lt;question&gt;
@@ -62,9 +64,14 @@ Here's a list of the current commands.
 #### images
 * !neko
 * !kitsune
+* !neko-gif
 * !yuko
 
 #### image processing
 (include image attachment with message)
 * !ascii
 * !grayscale
+
+### user
+* !user &lt;user&gt;
+* !user avatar &lt;user&gt;
