@@ -17,6 +17,7 @@ namespace YukoBot.Modules
         private const string DefaultASCII = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
         private static readonly HashSet<string> imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase){ ".png", ".jpg", ".jpeg", ".bmp", ".ico" };
 
+        // TODO: check for mentions to use avatar or use author's avatar if no attachment
         private async Task<Bitmap> GetImage()
         {
             Attachment attachment = Context.Message.Attachments.FirstOrDefault();
