@@ -50,22 +50,21 @@ namespace YukoBot.Modules
         // Promise I'm not a weeb
         [Command("kitsune")]
         [Summary("Sends a random kitsune image.")]
-        public async Task Kitsune() =>
-            await SendRandomImageUrl("/sfw/img/kitsune");
+        public async Task Kitsune()
+            => await SendRandomImageUrl("/sfw/img/kitsune");
 
         [Command("neko")]
         [Summary("Sends a random neko image.")]
-        public async Task Neko() =>
-            await SendRandomImageUrl("/sfw/img/neko");
+        public async Task Neko()
+            => await SendRandomImageUrl("/sfw/img/neko");
 
         [Command("neko-gif"), Alias("nekogif")]
         [Summary("Sends a random neko gif.")]
-        public async Task NekoGif() =>
-            await SendRandomImageUrl("/sfw/gif/neko");
+        public async Task NekoGif()
+            => await SendRandomImageUrl("/sfw/gif/neko");
 
         [Command("yuko")]
         [Summary("Get the best kitsune image.")]
-        public async Task Yuko() =>
-            await SendImageUrl("https://static.xoltia.com/images/yuko.jpg");
+        public async Task Yuko() => await SendImageUrl("https://static.xoltia.com/images/yuko.jpg");
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YukoBot.Services;
 
 namespace YukoBot.Modules
 {
@@ -14,6 +15,12 @@ namespace YukoBot.Modules
     {
         // TODO: add per guild configuration or at least bot configuration
         private const string muteRoleName = "yuko-muted";
+
+        private readonly GuildConfigService _guildConfig;
+        public ModerationCommands(GuildConfigService guildConfig)
+        {
+            _guildConfig = guildConfig;
+        }
 
         [Group("ban"), Alias("banish", "removeof", "destroy")]
         [RequireUserPermission(GuildPermission.BanMembers, ErrorMessage = "You don't have permission to do that!")]
@@ -124,6 +131,25 @@ namespace YukoBot.Modules
 
             await member.RemoveRoleAsync(muteRole);
             await ReplyAsync($"I'll allow {member.Username} to speak.");
+        }
+
+        [Command("autorole")]
+        [Summary("Sets role to give users when they join.")]
+        [RequireBotPermission(GuildPermission.ManageRoles)]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task Autorole(IRole role = null)
+        {
+            if (role == null)
+            {
+                IRole autorole = await _guildConfig.GetAutoRole(Context.Guild);
+                if (autorole == null)
+                    await ReplyAsync("Auto role isn't setup in this server.");
+                else
+                    await ReplyAsync($"The auto role is set to {autorole.Mention}");
+                return;
+            }
+            await _guildConfig.SetAutoRole(Context.Guild, role);
+            await ReplyAsync($"Users who join the server will now have be given the {role.Mention} role.");
         }
     }
 }
