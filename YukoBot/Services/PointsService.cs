@@ -45,8 +45,8 @@ namespace YukoBot.Services
             return _db.Points.FindAsync(user.Id.ToString());
         }
 
-        public async Task AddPoints(IUser user, int amount)
-            => await AddPoints(user.Id.ToString(), amount);
+        public async Task AddPoints(IUser user, int amount) =>
+            await AddPoints(user.Id.ToString(), amount);
 
         public async Task AddPoints(string userId, int amount)
         {
