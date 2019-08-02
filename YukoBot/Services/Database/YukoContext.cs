@@ -13,22 +13,14 @@ namespace YukoBot.Services.Database
 {
     public class YukoContext : DbContext
     {
-        private readonly IConfiguration _config;
-
         public DbSet<Points> Points { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<GameNotification> GameNotifications { get; set; }
         public DbSet<GuildConfig> GuildConfigs { get; set; }
 
-        public YukoContext(DbContextOptions<YukoContext> options, IConfiguration config)
+        public YukoContext(DbContextOptions<YukoContext> options)
             : base(options)
         {
-            _config = config;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_config["sqlServer"]);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

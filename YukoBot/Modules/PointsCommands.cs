@@ -19,39 +19,31 @@ namespace YukoBot.Modules
     [Group("Points")]
     public class PointsCommands : ModuleBase<SocketCommandContext>
     {
-        private readonly PointsService _points;
-        private readonly YukoContext _db;
+        private readonly DbService _db;
 
-        public PointsCommands(PointsService points, YukoContext dbContext)
+        public PointsCommands(DbService db)
         {
-            _points = points;
-            _db = dbContext;
+            _db = db;
         }
 
         [Command, Summary("Check how many points you have.")]
         public async Task Points()
         {
-            Points points = await _points.GetPoints(Context.User);
-            if (points == null)
+            using (var uow = _db.GetDbContext())
             {
-                await ReplyAsync("You don't have any points, try again later.");
-                return;
+                int points = await uow.Points.GetPointsAsync(Context.User);
+                await ReplyAsync($"You have {points} points!");
             }
-
-            await ReplyAsync($"You have {points.Amount} points!");
         }
 
-        [Command, Summary("Check how many points you have.")]
+        [Command, Summary("Check how many points somone else has.")]
         public async Task Points(SocketGuildUser user)
         {
-            Points points = await _points.GetPoints(user);
-            if (points == null)
+            using (var uow = _db.GetDbContext())
             {
-                await ReplyAsync($"{user.Username} doesn't have any points...");
-                return;
+                int points = await uow.Points.GetPointsAsync(user);
+                await ReplyAsync($"{user.Username} has {points} points!");
             }
-
-            await ReplyAsync($"{user.Username} has {points.Amount} points!");
         }
 
         [Command("give"), Alias("gift"), Summary("Share some of your points.")]
@@ -63,30 +55,27 @@ namespace YukoBot.Modules
                 return;
             }
 
-            Points points = await _points.GetPoints(Context.User);
-            if (points == null || points.Amount < amount)
+            using (var uow = _db.GetDbContext())
             {
-                await ReplyAsync("You don't have enough points!");
-                return;
+                int points = await uow.Points.GetPointsAsync(Context.User);
+                if (points < amount)
+                {
+                    await ReplyAsync("You don't have enough points!");
+                    return;
+                }
+                await uow.Points.AddPointsAsync(Context.User, (int)-amount);
+                await uow.Points.AddPointsAsync(user, (int)amount);
+                await ReplyAsync($"I've given {user.Mention} {amount} of your points. Your new balance is {points-amount}.");
             }
-
-            if (!(user is SocketUser socketUser))
-            {
-                // I don't think this should happen?
-                return;
-            }
-
-            await _points.AddPoints(Context.User, (int)-amount);
-            await _points.AddPoints(socketUser, (int)amount);
-            await ReplyAsync($"I've given {user.Mention} {amount} of your points. Your new balance is {points.Amount}.");
         }
         
         // TODO: per guild leaderboard
-
         [Command("leaderboard")]
         public async Task Leaderboard()
         {
-            Points[] points = await _db.Points.OrderByDescending(p => p.Amount).Take(5).ToArrayAsync();
+            var uow = _db.GetDbContext();
+            Points[] points = await uow.Points.GetTopPointsAsync();
+            uow.Dispose();
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithDescription("Heres the top 5 global point holders.")

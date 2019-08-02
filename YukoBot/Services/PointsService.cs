@@ -19,7 +19,7 @@ namespace YukoBot.Services
     {
         private readonly DiscordSocketClient _client;
         private readonly ConfigService _config;
-        private readonly YukoContext _db;
+        private readonly DbService _db;
         private readonly LoggingService _logger;
 
         private readonly float _bonusReset;
@@ -33,47 +33,22 @@ namespace YukoBot.Services
             _client = services.GetRequiredService<DiscordSocketClient>();
             _config = services.GetRequiredService<ConfigService>();
             _logger = services.GetRequiredService<LoggingService>();
-            _db = services.GetRequiredService<YukoContext>();
+            _db = services.GetRequiredService<DbService>();
 
             _messageBonus = _config.GetConfigOption("points:messageBonus", 1, int.TryParse);
             _bonusReset = _config.GetConfigOption("points:bonusReset", 30f, float.TryParse);
             _maxBonus = _config.GetConfigOption("points:maxBonus", 10, int.TryParse);
         }
 
-        public Task<Points> GetPoints(IUser user)
-        {
-            return _db.Points.FindAsync(user.Id.ToString());
-        }
-
-        public async Task AddPoints(IUser user, int amount) =>
-            await AddPoints(user.Id.ToString(), amount);
-
-        public async Task AddPoints(string userId, int amount)
-        {
-            Points points = await _db.Points.SingleOrDefaultAsync(p => p.UserId == userId);
-            if (points == null)
-            {
-                points = new Points()
-                {
-                    UserId = userId,
-                    Amount = amount
-                };
-                await _db.Points.AddAsync(points);
-            }
-            else
-            {
-                points.Amount += amount;
-                _db.Points.Update(points);
-            }
-
-            await _db.SaveChangesAsync();
-        }
-
         private async void ResetBonuses(object sender, ElapsedEventArgs e)
         {
-            foreach (KeyValuePair<ulong, int> bonus in pointBonuses)
+            using (var uow = _db.GetDbContext())
             {
-                await AddPoints(bonus.Key.ToString(), bonus.Value);
+                foreach (KeyValuePair<ulong, int> bonus in pointBonuses)
+                {
+                    await uow.Points.AddPointsAsync(bonus.Key.ToString(), bonus.Value);
+                }
+                await uow.SaveChangesAsync();
             }
 
             pointBonuses.Clear();

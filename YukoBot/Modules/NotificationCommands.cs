@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using YukoBot.Services.Database;
 using YukoBot.Services.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using YukoBot.Services;
 
 namespace YukoBot.Modules
 {
@@ -15,10 +16,11 @@ namespace YukoBot.Modules
     [Group("notify")]
     public class NotificationCommands : ModuleBase<SocketCommandContext>
     {
-        private readonly YukoContext _db;
-        public NotificationCommands(YukoContext dbContext)
+        private readonly DbService _db;
+
+        public NotificationCommands(DbService dbService)
         {
-            _db = dbContext;
+            _db = dbService;
         }
 
         [Command]
@@ -29,20 +31,23 @@ namespace YukoBot.Modules
             string opter = Context.Message.Author.Id.ToString();
             string opted = user.Id.ToString();
 
-            if (await _db.Notifications.SingleOrDefaultAsync(n => n.ReceiverId == opter && n.OptedId == opted) != null)
+            using (var uow = _db.GetDbContext())
             {
-                await ReplyAsync($"You've already opted to receive notifications for {user.Username}, silly!");
-                return;
-            }
+                if (await uow.Notifications.GetNotificationAsync(opter, opted) != null)
+                {
+                    await ReplyAsync($"You've already opted to receive notifications for {user.Username}, silly!");
+                    return;
+                }
 
-            await _db.Notifications.AddAsync(new Notification()
-            {
-                ReceiverId = opter,
-                OptedId = opted,
-                GuildId = Context.Guild.Id.ToString()
-            });
-            await _db.SaveChangesAsync();
-            await ReplyAsync($"You'll now receive notifications about {user.Username}!");
+                await uow.Notifications.AddAsync(new Notification()
+                {
+                    ReceiverId = opter,
+                    OptedId = opted,
+                    GuildId = Context.Guild.Id.ToString()
+                });
+                await uow.SaveChangesAsync();
+                await ReplyAsync($"You'll now receive notifications about {user.Username}!");
+            }
         }
 
         [Command("disable")]
@@ -52,22 +57,24 @@ namespace YukoBot.Modules
             string opter = Context.User.Id.ToString();
             string opted = user.Id.ToString();
 
-            Notification opt = await _db.Notifications.SingleOrDefaultAsync(n => n.OptedId == opted && n.ReceiverId == opter);
-            if (opt == null)
+            using (var uow = _db.GetDbContext())
             {
-                await ReplyAsync("Nothing to disable here. You aren't receiving notifications about them, silly!");
-                return;
-            }
+                UpdateResult result = await uow.Notifications.TrySetNotificationEnabledAsync(opter, opted, false);
+                if (result == UpdateResult.DoesNotExist)
+                {
+                    await ReplyAsync("Nothing to disable here. You aren't receiving notifications about them, silly!");
+                    return;
+                }
 
-            if (!opt.Enabled)
-            {
-                await ReplyAsync("Nothing to disable here. I've already marked this as disabled.");
-                return;
-            }
+                if (result == UpdateResult.NoChangesMade)
+                {
+                    await ReplyAsync("Nothing to disable here. I've already marked this as disabled.");
+                    return;
+                }
 
-            opt.Enabled = false;
-            await _db.SaveChangesAsync();
-            await ReplyAsync($"I'll remember not to send you notifications about {user.Username} until you tell me otherwise.");
+                await uow.SaveChangesAsync();
+                await ReplyAsync($"I'll remember not to send you notifications about {user.Username} until you tell me otherwise.");
+            }
         }
 
         [Command("enable")]
@@ -77,30 +84,34 @@ namespace YukoBot.Modules
             string opter = Context.User.Id.ToString();
             string opted = user.Id.ToString();
 
-            Notification opt = await _db.Notifications.SingleOrDefaultAsync(n => n.OptedId == opted && n.ReceiverId == opter);
-            if (opt == null)
+            using (var uow = _db.GetDbContext())
             {
-                await ReplyAsync("I can't enable a notification that doesn't exist.");
-                return;
-            }
+                UpdateResult result = await uow.Notifications.TrySetNotificationEnabledAsync(opter, opted, true);
+                if (result == UpdateResult.DoesNotExist)
+                {
+                    await ReplyAsync("Nothing to enable here. You're not even receiving notifications about them, silly!");
+                    return;
+                }
 
-            if (opt.Enabled)
-            {
-                await ReplyAsync("Nothing to enable here. It wasn't disabled in the first place.");
-                return;
-            }
+                if (result == UpdateResult.NoChangesMade)
+                {
+                    await ReplyAsync("Nothing to enable here. Your notification is already enabled.");
+                    return;
+                }
 
-            opt.Enabled = true;
-            await _db.SaveChangesAsync();
-            await ReplyAsync($"I'll start notifying you about {user.Username} again.");
+                await uow.SaveChangesAsync();
+                await ReplyAsync($"I'll remember to notify you about {user.Username}.");
+            }
         }
 
         [Command("list")]
         [Summary("List every person you're receiving notifications for.")]
         public async Task ListNotifications()
         {
+            var uow = _db.GetDbContext();
             string opter = Context.User.Id.ToString();
-            Notification[] opts = await _db.Notifications.Where(n => n.ReceiverId == opter).ToArrayAsync();
+            Notification[] opts = await uow.Notifications.GetNotificationsAsync(opter, false);
+            uow.Dispose();
 
             EmbedBuilder embed = new EmbedBuilder().WithColor(0xffc0cb);
 
@@ -131,27 +142,30 @@ namespace YukoBot.Modules
             string opter = Context.Message.Author.Id.ToString();
             string opted = user.Id.ToString();
 
-            Notification opt = await _db.Notifications.SingleOrDefaultAsync(n => n.ReceiverId == opter && n.OptedId == opted);
-
-            if (opt == null)
+            using (var uow = _db.GetDbContext())
             {
-                await ReplyAsync($"You're not opted to receive notifications about {user.Username}.");
-                return;
-            }
+                Notification opt = await uow.Notifications.GetNotificationAsync(opter, opted);
 
-            _db.Notifications.Remove(opt);
-            await _db.SaveChangesAsync();
-            await ReplyAsync($"You'll no longer receive notifications about {user.Username}.");
+                if (opt == null)
+                {
+                    await ReplyAsync($"You're not opted to receive notifications about {user.Username}.");
+                    return;
+                }
+
+                uow.Notifications.Remove(opt);
+                await uow.SaveChangesAsync();
+                await ReplyAsync($"You'll no longer receive notifications about {user.Username}.");
+            }
         }
 
         [Group("game")]
         public class GameNotificationCommands : ModuleBase<SocketCommandContext>
         {
-            private readonly YukoContext _db;
+            private readonly DbService _db;
 
-            public GameNotificationCommands(YukoContext dbContext)
+            public GameNotificationCommands(DbService dbService)
             {
-                _db = dbContext;
+                _db = dbService;
             }
 
             [Command, Priority(0)]
@@ -160,19 +174,22 @@ namespace YukoBot.Modules
             {
                 string opter = Context.User.Id.ToString();
 
-                if (await _db.GameNotifications.SingleOrDefaultAsync(g => g.ReceiverId == opter && g.Game == game) != null)
+                using (var uow = _db.GetDbContext())
                 {
-                    await ReplyAsync("You're already getting notifications for this game.");
-                    return;
-                }
+                    if (await uow.GameNotifications.GetNotificationAsync(opter, game) != null)
+                    {
+                        await ReplyAsync("You're already getting notifications for this game.");
+                        return;
+                    }
 
-                await _db.GameNotifications.AddAsync(new GameNotification()
-                {
-                    ReceiverId = opter,
-                    Game = game
-                });
-                await _db.SaveChangesAsync();
-                await ReplyAsync($"I'll now notify you when your friends start to play {game} without you.");
+                    await uow.GameNotifications.AddAsync(new GameNotification()
+                    {
+                        ReceiverId = opter,
+                        Game = game
+                    });
+                    await uow.SaveChangesAsync();
+                    await ReplyAsync($"I'll now notify you when your friends start to play {game} without you.");
+                }
             }
 
             [Command("remove"), Priority(1)]
@@ -180,17 +197,20 @@ namespace YukoBot.Modules
             public async Task RemoveGameNotification([Remainder]string game)
             {
                 string opter = Context.User.Id.ToString();
-                GameNotification notification = await _db.GameNotifications.SingleOrDefaultAsync(g => g.ReceiverId == opter && g.Game == game);
-
-                if (notification == null)
+                using (var uow = _db.GetDbContext())
                 {
-                    await ReplyAsync("You're already not getting notifications for that game!");
-                    return;
-                }
+                    GameNotification notification = await uow.GameNotifications.GetNotificationAsync(opter, game);
 
-                _db.GameNotifications.Remove(notification);
-                await _db.SaveChangesAsync();
-                await ReplyAsync($"I'll no longer notify you when your friends play {game}.");
+                    if (notification == null)
+                    {
+                        await ReplyAsync("You're already not getting notifications for that game!");
+                        return;
+                    }
+
+                    uow.GameNotifications.Remove(notification);
+                    await uow.SaveChangesAsync();
+                    await ReplyAsync($"I'll no longer notify you when your friends play {game}.");
+                }
             }
 
             [Command("list"), Priority(1)]
@@ -198,7 +218,9 @@ namespace YukoBot.Modules
             public async Task ListGameNotificatoins()
             {
                 string opter = Context.User.Id.ToString();
-                GameNotification[] opts = await _db.GameNotifications.Where(n => n.ReceiverId == opter).ToArrayAsync();
+                var uow = _db.GetDbContext();
+                GameNotification[] opts = await uow.GameNotifications.GetNotificationsAsync(opter);
+                uow.Dispose();
 
                 EmbedBuilder embed = new EmbedBuilder().WithColor(0xffc0cb);
 

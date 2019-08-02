@@ -42,7 +42,7 @@ namespace YukoBot.Core
             }
 
             _services = new ServiceCollection()
-                .AddDbContext<YukoContext>(ServiceLifetime.Transient)
+                .AddSingleton<DbService>()
                 .AddSingleton(_client)
                 .AddSingleton(_config)
                 .AddSingleton(new CommandService(new CommandServiceConfig() {
