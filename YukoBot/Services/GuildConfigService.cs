@@ -39,30 +39,29 @@ namespace YukoBot.Services
             await member.AddRoleAsync(role);
         }
 
-        public Task<GuildConfig> GetGuildConfig(string guildId)
-            =>  _guildConfigs.SingleOrDefaultAsync(c => c.GuildId == guildId);
+        public Task<GuildConfig> GetGuildConfig(string guildId) =>
+            _guildConfigs.SingleOrDefaultAsync(c => c.GuildId == guildId);
 
-        public Task<int> SaveChanges()
-            =>  _db.SaveChangesAsync();
+        public Task<int> SaveChanges() => 
+            _db.SaveChangesAsync();
 
-        public Task<string> GetPrefix(IGuild guild)
-            => GetPrefix(guild.Id.ToString());
+        public Task<string> GetPrefix(IGuild guild) =>
+            GetPrefix(guild.Id.ToString());
 
-        public Task<string> GetPrefix(ulong guildId)
-            => GetPrefix(guildId.ToString());
+        public Task<string> GetPrefix(ulong guildId) =>
+            GetPrefix(guildId.ToString());
 
-        public Task SetPrefix(IGuild guild, string prefix)
-            => SetPrefix(guild.Id.ToString(), prefix);
+        public Task SetPrefix(IGuild guild, string prefix) => 
+            SetPrefix(guild.Id.ToString(), prefix);
 
-        public Task SetPrefix(ulong guildId, string prefix)
-            => SetPrefix(guildId.ToString(), prefix);
+        public Task SetPrefix(ulong guildId, string prefix) =>
+            SetPrefix(guildId.ToString(), prefix);
 
-        public Task SetAutoRole(IGuild guild, IRole role)
-            => SetAutoRole(guild.Id.ToString(), role.Id.ToString());
+        public Task SetAutoRole(IGuild guild, IRole role) => 
+            SetAutoRole(guild.Id.ToString(), role.Id.ToString());
 
-        public Task<ulong?> GetAutoRoleId(IGuild guild)
-            => GetAutoRoleId(guild.Id.ToString());
-
+        public Task<ulong?> GetAutoRoleId(IGuild guild) =>
+            GetAutoRoleId(guild.Id.ToString());
 
         public async Task<string> GetPrefix(string guildId)
         {
