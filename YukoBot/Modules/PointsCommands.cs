@@ -1,18 +1,13 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using YukoBot.Services;
-using YukoBot.Services.Database;
-using YukoBot.Services.Database.Models;
-using System.Windows.Forms.DataVisualization.Charting;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms.DataVisualization.Charting;
+using YukoBot.Services;
+using YukoBot.Services.Database.Models;
 
 namespace YukoBot.Modules
 {

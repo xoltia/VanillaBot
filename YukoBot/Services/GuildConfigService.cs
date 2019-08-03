@@ -1,11 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using YukoBot.Services.Database;
 using YukoBot.Services.Database.Models;

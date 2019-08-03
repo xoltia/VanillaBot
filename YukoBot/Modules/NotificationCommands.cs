@@ -1,14 +1,9 @@
 ﻿using Discord;
 using Discord.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using YukoBot.Services;
 using YukoBot.Services.Database;
 using YukoBot.Services.Database.Models;
-using Microsoft.EntityFrameworkCore;
-using YukoBot.Services;
 
 namespace YukoBot.Modules
 {

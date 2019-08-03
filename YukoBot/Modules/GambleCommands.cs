@@ -3,11 +3,9 @@ using Discord.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using YukoBot.Modules.Gambling;
 using YukoBot.Services;
-using YukoBot.Services.Database.Models;
 
 namespace YukoBot.Modules
 {

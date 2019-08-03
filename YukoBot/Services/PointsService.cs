@@ -1,17 +1,10 @@
 ﻿using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Timers;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using YukoBot.Services.Database;
-using Discord;
-using YukoBot.Services.Database.Models;
-using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Timers;
 
 namespace YukoBot.Services
 {
