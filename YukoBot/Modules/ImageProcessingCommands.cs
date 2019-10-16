@@ -14,14 +14,14 @@ namespace YukoBot.Modules
     [Name("Image Processing")]
     public class ImageProcessingCommands : ModuleBase<SocketCommandContext>
     {
-        private const string DefaultASCII = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
-        private static readonly HashSet<string> imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase){ ".png", ".jpg", ".jpeg", ".bmp", ".ico" };
+        private static readonly string DefaultASCII = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+        private static readonly HashSet<string> ImageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase){ ".png", ".jpg", ".jpeg", ".bmp", ".ico" };
 
         // TODO: check for mentions to use avatar or use author's avatar if no attachment
         private async Task<Bitmap> GetImage()
         {
             Attachment attachment = Context.Message.Attachments.FirstOrDefault();
-            if (attachment == null || !imageExtensions.Contains(Path.GetExtension(attachment.Filename)))
+            if (attachment == null || !ImageExtensions.Contains(Path.GetExtension(attachment.Filename)))
             {
                 return null;
             }
