@@ -222,6 +222,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\FunCommands.cs" />
     <Compile Include="Modules\General\Commit.cs" />
     <Compile Include="Modules\General\CommitActivity.cs" />
     <Compile Include="Modules\Gambling\Coin.cs" />
